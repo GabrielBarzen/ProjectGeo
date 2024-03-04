@@ -9,20 +9,22 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
+import se.gabnet.projectgeo.model.endpoints.AdminEndpoint
 import se.gabnet.projectgeo.model.game.map.ResourceArea
+import se.gabnet.projectgeo.model.game.map.Vertex
 import se.gabnet.projectgeo.model.game.map.persistence.ResourceAreaRepository
 import java.util.*
 
 @RestController
-@RequestMapping("/api/v1/game/admin")
-class AreaController() {
+@RequestMapping(AdminEndpoint.ADMIN_GAME_BASE.ENDPOINT)
+class ResourceAreaController {
     @Autowired
     lateinit var resourceAreaRepository: ResourceAreaRepository
     var repositoryGson: Gson = GsonBuilder().excludeFieldsWithoutExposeAnnotation().create()
     var gson: Gson = GsonBuilder().create()
 
     @RequestMapping(
-            "/area",
+            AdminEndpoint.RESOURCE_AREA.ENDPOINT,
             method = [RequestMethod.POST],
             produces = ["application/json"],
             consumes = ["application/json"]
@@ -32,25 +34,29 @@ class AreaController() {
         val resourceArea = ResourceArea(createRequest.name)
         val graph = resourceArea.createNewGraph()
 
+        var firstVertex: Vertex? = null;
+        var previousVertex: Vertex? = null;
         for (point in createRequest.points) {
-            var vertex = graph.addVertex(point[0], point[1])
-        }
-
-        for (vertex in graph.vertices.values) {
-            for (vertexConnections in graph.vertices.values) {
-                if (vertex.id != vertexConnections.id) {
-                    vertex.addConnection(vertexConnections)
-                }
+            val vertex = graph.addVertex(point[0], point[1])
+            if (firstVertex == null) {
+                firstVertex = vertex
+                previousVertex = vertex
+                continue
+            }
+            if (previousVertex != null) {
+                vertex.addConnection(previousVertex)
+                previousVertex = vertex
+            }
+            if (createRequest.points.last() == point) {
+                vertex.addConnection(firstVertex)
             }
         }
-
         resourceAreaRepository.save(resourceArea)
-
         return ResponseEntity(repositoryGson.toJson(resourceArea), HttpStatus.OK)
     }
 
     @RequestMapping(
-            "/area",
+            AdminEndpoint.RESOURCE_AREA.ENDPOINT,
             method = [RequestMethod.DELETE],
             consumes = ["application/json"]
     )

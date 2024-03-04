@@ -31,7 +31,7 @@ class Graph(
     val id: UUID = UUID.randomUUID()
 
 
-    fun addVertex(y: Double, x: Double): Vertex? {
+    fun addVertex(y: Double, x: Double): Vertex {
         val vertex = Vertex(y, x, mutableSetOf(), this)
 
         if (vertices.isEmpty()) {
