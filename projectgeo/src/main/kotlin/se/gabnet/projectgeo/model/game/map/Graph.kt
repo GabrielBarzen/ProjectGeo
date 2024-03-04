@@ -93,14 +93,14 @@ class Graph(
             return null
         }
 
-        fetchedDestinationVertex.id!!.let { fetchedSourceVertex.connections.add(it) }
+        fetchedDestinationVertex.id.let { fetchedSourceVertex.connections.add(it) }
         vertices[sourceVertexUUID] = fetchedSourceVertex;
 
         if (!directional) {
             return fetchedSourceVertex
         }
 
-        fetchedSourceVertex.id!!.let { fetchedDestinationVertex.connections.add(it) }
+        fetchedSourceVertex.id.let { fetchedDestinationVertex.connections.add(it) }
         vertices[destinationVertexUUID] = fetchedDestinationVertex;
 
         return fetchedSourceVertex
