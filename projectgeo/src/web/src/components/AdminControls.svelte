@@ -1,10 +1,11 @@
 <script lang="ts">
   import L, { CircleMarker, type LatLngExpression } from "leaflet"
   import "leaflet/dist/leaflet.css"
-  import { Link } from "../lib/mapping/Link"
   import { type Area, type Graph, type Vertex } from "../lib/mapping/Graphs"
   import ConfirmInput from "../ConfirmInput.svelte"
   import ContextMenu, { Action } from "./ContextMenu.svelte"
+  import { onMount } from "svelte"
+  import { ResourceArea } from "../lib/game/ResourceArea"
 
   enum EditMode {
     None,
@@ -67,41 +68,24 @@
   }
 
   var layerList: L.Layer[] = []
-  function renderArea(area: Area) {
-    var checkSet: Set<string[]> = new Set()
 
-    for (const graph of area.graphs.values()) {
-      for (const vertex of graph.vertices.values()) {
-        console.log(vertex)
-        for (const vertexId of vertex.connections) {
-          var checkList = [vertexId, vertex.id].sort()
-          if (!checkSet.has(checkList)) {
-            checkSet.add(checkList)
-            var connectedVertex: Vertex = graph.vertices.get(vertexId)
+  onMount(() => {
+    renderAllAreas()
+  })
 
-            var firstCoord: number[] = [vertex.y, vertex.x]
-            var secondCoord: number[] = [connectedVertex.y, connectedVertex.x]
-
-            var link: Link = new Link(firstCoord, secondCoord, vertex.id, connectedVertex.id)
-
-            link.setStyle({ color: "#00FF00", weight: 12, opacity: 0.2 })
-            map?.addLayer(link)
-
-            var line: L.Polyline = new L.Polyline([
-              firstCoord as LatLngExpression,
-              secondCoord as LatLngExpression,
-            ])
-            line.setStyle({ color: "#FF0000", weight: 3, opacity: 0.8 })
-            map?.addLayer(line)
-
-            layerList.push(line)
-            layerList.push(link)
-          }
-        }
+  async function renderAllAreas() {
+    var data = await fetch("/api/v1/debug/game/resource-area").then()
+    var areaData: any = await data.json()
+    areaData.forEach((area: any) => {
+      var resourceArea: ResourceArea = new ResourceArea("#FFFFFF", "#000000", true)
+      resourceArea.createLinks(parseAreaJSON(area))
+      if (map) {
+        resourceArea.renderTo(map)
       }
-    }
+    })
   }
 
+  var createdResourceArea: ResourceArea
   async function executeResourceAreaCreateRequest(pointlist: Number[][], name: string) {
     var body: any = { points: pointlist, name: name }
 
@@ -114,30 +98,22 @@
     })
     //var area = JSON.stringify(await data.json(), null, 2))
     var areaData: any = await data.json()
-
     var area = parseAreaJSON(areaData)
-    renderArea(area)
+
     createdAreaId = area.id
-    currentEditModeState = EditModeState.Confirm
+    createdResourceArea = new ResourceArea("#FF00FF", "#00FFFF", true)
+
+    createdResourceArea.createLinks(area)
+    createdResourceArea.renderTo(map)
   }
 
   async function executeRemoveRequest(areaId: string) {
-    var body: any = { id: areaId }
-
-    var data = await fetch("/api/v1/game/admin/resource-area", {
-      body: JSON.stringify(body),
+    var data = await fetch("/api/v1/game/admin/resource-area?resource-area-id=" + areaId, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
       },
     })
-    //var area = JSON.stringify(await data.json(), null, 2))
-    var areaData: any = await data.json()
-
-    var area = parseAreaJSON(areaData)
-    renderArea(area)
-    areaId = area.id
-    currentEditModeState = EditModeState.Confirm
   }
 
   function parseAreaJSON(areaJSON: any): Area {
@@ -166,6 +142,7 @@
     }
     currentEditMode = EditMode.None
     currentEditModeState = EditModeState.Action
+    renderAllAreas()
   }
 
   function clearLayers() {
@@ -221,6 +198,7 @@
           if (confirm) {
             currentEditMode = EditMode.None
             currentEditModeState = EditModeState.None
+            createdResourceArea.clear()
             abort()
           } else {
             abort()

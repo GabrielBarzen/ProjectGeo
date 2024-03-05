@@ -5,15 +5,12 @@ import com.google.gson.GsonBuilder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
+import se.gabnet.projectgeo.api.v1.utils.inputvalidation.MappingInputValidation
 import se.gabnet.projectgeo.model.endpoints.AdminEndpoint
 import se.gabnet.projectgeo.model.game.map.ResourceArea
 import se.gabnet.projectgeo.model.game.map.Vertex
 import se.gabnet.projectgeo.model.game.map.persistence.ResourceAreaRepository
-import java.util.*
 
 @RestController
 @RequestMapping(AdminEndpoint.ADMIN_GAME_BASE.ENDPOINT)
@@ -58,17 +55,18 @@ class ResourceAreaController {
     @RequestMapping(
             AdminEndpoint.RESOURCE_AREA.ENDPOINT,
             method = [RequestMethod.DELETE],
-            consumes = ["application/json"]
     )
-    fun deleteArea(@RequestBody body: String): ResponseEntity<String> {
-        val deleteRequest: DeleteRequest = gson.fromJson(body, DeleteRequest::class.java)
-        val resourceArea = resourceAreaRepository.findById(deleteRequest.id)
-        resourceAreaRepository.deleteById(resourceArea.get().id)
-
-        return ResponseEntity(HttpStatus.OK)
+    fun deleteArea(@RequestParam(name = "resource-area-id") resourceAreaId: String): ResponseEntity<String> {
+        return try {
+            val resourceArea = MappingInputValidation.getResourceArea(resourceAreaId)
+            resourceAreaRepository.deleteById(resourceArea.id)
+            ResponseEntity(HttpStatus.OK)
+        } catch (e: MappingInputValidation.AdminInputValidationException) {
+            val response = e.response
+            ResponseEntity(response.ERROR, response.httpStatus)
+        }
     }
 
     data class CreateRequest(val points: List<List<Double>>, val name: String)
-    data class DeleteRequest(val id: UUID)
 
 }
