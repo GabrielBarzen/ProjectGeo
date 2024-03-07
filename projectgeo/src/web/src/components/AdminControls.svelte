@@ -6,6 +6,8 @@
   import ContextMenu, { Action } from "./ContextMenu.svelte"
   import { onMount } from "svelte"
   import { ResourceArea } from "../lib/game/ResourceArea"
+  import { Link } from "../lib/mapping/Link"
+  import * as JSONParser from "../lib/json/Parser"
 
   enum EditMode {
     None,
@@ -14,16 +16,30 @@
     CreateResourceArea,
     CreateGraph,
   }
+
   enum EditModeState {
     None,
     Action,
     Confirm,
   }
+
   var currentEditMode = EditMode.None
   var currentEditModeState = EditModeState.None
 
+  var createdAreaId: string
+  var name: string = "TestName" //TODO Replace with user input
+  var createList: number[][]
+  var markers: CircleMarker[]
+  var createMarkerList: L.Layer[] = []
+  var createdResourceArea: ResourceArea
+  var resourceAreas: ResourceArea[] = []
+
   export var map: L.Map | undefined
   let expandControls = false
+
+  onMount(() => {
+    renderAllAreas()
+  })
 
   function toggleExpand() {
     if (currentEditMode == EditMode.None) {
@@ -34,9 +50,6 @@
     }
   }
 
-  var name: string = "TestName" //TODO Replace with user input
-  var createList: number[][]
-  var markers: CircleMarker[]
   async function createResourceArea() {
     currentEditMode = EditMode.CreateGraph
     currentEditModeState = EditModeState.Action
@@ -44,20 +57,33 @@
     createList = []
     if (map) {
       map.on("click", (e) => {
+        console.log("MAP CLICK")
         var lat = e.latlng.lat
         var lng = e.latlng.lng
-
-        createList.push([lat, lng])
+        var validated = true
+        createList.forEach((coordinate: number[]) => {
+          if (getDistanceFromLatLonInKm(coordinate, [lat, lng]) < 0.05) {
+            createList = createList.filter((item) => item != coordinate)
+            validated = false
+          }
+        })
+        if (validated) {
+          createList.push([lat, lng])
+        }
 
         if (markers) {
           markers.forEach((marker) => map?.removeLayer(marker))
         }
         markers = []
 
-        createList.forEach((listItem) => markers.push(L.circleMarker([listItem[0], listItem[1]])))
-        markers.forEach((marker) => map?.addLayer(marker))
+        createList.forEach((listItem) => {
+          var marker = L.circleMarker([listItem[0], listItem[1]])
 
-        markers.forEach((marker) => layerList.push(marker))
+          markers.push(marker)
+        })
+        markers.forEach((marker) => map?.addLayer(marker))
+        markers.forEach((marker) => createMarkerList.push(marker))
+
         if (createList.length > 2) {
           currentEditModeState = EditModeState.Confirm
         }
@@ -67,25 +93,53 @@
     }
   }
 
-  var layerList: L.Layer[] = []
+  function getDistanceFromLatLonInKm(fromYX: number[], toYX: number[]) {
+    var R = 6371 // Radius of the earth in km
+    var dLat = deg2rad(fromYX[0] - toYX[0]) // deg2rad below
+    var dLon = deg2rad(fromYX[1] - toYX[1])
+    var a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(deg2rad(toYX[0])) *
+        Math.cos(deg2rad(fromYX[0])) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2)
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+    var d = R * c // Distance in km
+    return d
+  }
 
-  onMount(() => {
-    renderAllAreas()
-  })
+  function deg2rad(deg: number) {
+    return deg * (Math.PI / 180)
+  }
 
   async function renderAllAreas() {
-    var data = await fetch("/api/v1/debug/game/resource-area").then()
+    var data = await fetch("/api/v1/game/admin/resource-area").then()
     var areaData: any = await data.json()
-    areaData.forEach((area: any) => {
-      var resourceArea: ResourceArea = new ResourceArea("#FFFFFF", "#000000", true)
-      resourceArea.createLinks(parseAreaJSON(area))
+    if (resourceAreas) {
+      resourceAreas.forEach((area) => {
+        area.clear()
+      })
+    }
+    JSONParser.parseAreaJSONList(areaData).forEach((area) => {
+      var resourceArea: ResourceArea = new ResourceArea(area, resourceAreaOnClick)
       if (map) {
         resourceArea.renderTo(map)
+        resourceAreas.push(resourceArea)
+        resourceArea.addDraggableMarkers()
       }
     })
   }
 
-  var createdResourceArea: ResourceArea
+  var pressedResourceAreaLink: Link | undefined
+  function resourceAreaOnClick(pressedLink: Link) {
+    switch (currentEditMode) {
+      case EditMode.Delete:
+        pressedResourceAreaLink = pressedLink
+        currentEditModeState = EditModeState.Confirm
+        break
+    }
+  }
+
   async function executeResourceAreaCreateRequest(pointlist: Number[][], name: string) {
     var body: any = { points: pointlist, name: name }
 
@@ -96,15 +150,15 @@
         "Content-Type": "application/json",
       },
     })
-    //var area = JSON.stringify(await data.json(), null, 2))
     var areaData: any = await data.json()
     var area = parseAreaJSON(areaData)
 
-    createdAreaId = area.id
-    createdResourceArea = new ResourceArea("#FF00FF", "#00FFFF", true)
+    createdResourceArea = new ResourceArea(area, resourceAreaOnClick, "#FF00FF", "#00FFFF", true)
+    resourceAreas.push(createdResourceArea)
 
-    createdResourceArea.createLinks(area)
-    createdResourceArea.renderTo(map)
+    if (map) {
+      createdResourceArea.renderTo(map)
+    }
   }
 
   async function executeRemoveRequest(areaId: string) {
@@ -114,6 +168,7 @@
         "Content-Type": "application/json",
       },
     })
+    renderAllAreas()
   }
 
   function parseAreaJSON(areaJSON: any): Area {
@@ -125,33 +180,26 @@
     return area
   }
 
-  var createdAreaId: string
-
-  function abort() {
+  function clear() {
     clearLayers()
-    switch (currentEditMode) {
-      case EditMode.CreateResourceArea: {
-        if (createdAreaId) {
-          executeRemoveRequest(createdAreaId)
-        }
-      }
-    }
-
     if (map) {
       map.off("click")
     }
+    resourceAreas.forEach((resourceArea) => {
+      resourceArea.clear()
+    })
     currentEditMode = EditMode.None
-    currentEditModeState = EditModeState.Action
+    currentEditModeState = EditModeState.None
     renderAllAreas()
   }
 
   function clearLayers() {
-    layerList.forEach((layer) => map?.removeLayer(layer))
+    createMarkerList.forEach((layer) => map?.removeLayer(layer))
     createList = []
-    layerList = []
+    createMarkerList = []
   }
 
-  async function handleActionMessage(event) {
+  async function handleActionMessage(event: any) {
     var action = event.detail.action
     switch (action) {
       case "Create":
@@ -168,13 +216,14 @@
         break
       case "Delete":
         console.log("IsDeleteAction")
-        currentEditMode = EditMode.None //TODO Not Implemented
+        currentEditMode = EditMode.Delete
+        currentEditModeState = EditModeState.Action
 
         break
     }
   }
 
-  async function handleConfirmMessage(event) {
+  async function handleConfirmMessage(event: any) {
     var confirm = event.detail.confirmed
     if (currentEditModeState == EditModeState.Confirm) {
       switch (currentEditMode) {
@@ -190,7 +239,7 @@
             currentEditMode = EditMode.CreateResourceArea
             currentEditModeState = EditModeState.Confirm
           } else {
-            abort()
+            clear()
           }
 
           break
@@ -199,12 +248,28 @@
             currentEditMode = EditMode.None
             currentEditModeState = EditModeState.None
             createdResourceArea.clear()
-            abort()
+            clear()
           } else {
-            abort()
+            if (createdResourceArea.area.id) {
+              executeRemoveRequest(createdResourceArea.area.id)
+            }
+            clear()
           }
 
           break
+        case EditMode.Delete:
+          if (confirm) {
+            if (pressedResourceAreaLink) {
+              executeRemoveRequest(pressedResourceAreaLink.resourceArea.area.id)
+            }
+            clear()
+          } else {
+            clear()
+          }
+          break
+        case EditMode.None:
+        case EditMode.Edit:
+          console.log("Not implemented")
       }
     }
   }
@@ -240,7 +305,7 @@
           <button
             class="pointer-events-auto p-1 btn-primary mb-4"
             id="expand-button"
-            on:click={abort}
+            on:click={clear}
           >
             Cancel
           </button>

@@ -5,6 +5,7 @@
   html,
   body {
     margin: 0;
+    min-width: 320px;
   }
   html {
     height: 100%;
@@ -25,10 +26,10 @@
     @apply pointer-events-auto text-white;
   }
   .btn-primary {
-    @apply btn bg-gray-600 size-full rounded;
+    @apply btn bg-gray-600 w-full h-3/4 rounded;
   }
   .btn-secondary {
-    @apply btn bg-gray-800 h-8 w-full rounded;
+    @apply btn bg-gray-800 h-8 w-full rounded
   }
   .btn-confirm {
     @apply btn bg-green-600 h-8 w-1/2 rounded-l;
@@ -48,3 +49,5 @@
   .btn-abort:active {
     @apply bg-red-800;
   }
+
+

@@ -6,7 +6,9 @@ import mkcert from 'vite-plugin-mkcert'
 export default defineConfig({
   build: {
     outDir: "../../../projectgeo/build/resources/main/static/",
-    sourcemap: 'inline'
+    sourcemap: 'inline',
+    chunkSizeWarningLimit: 2000,
+
   },
   plugins: [svelte({
     compilerOptions: {

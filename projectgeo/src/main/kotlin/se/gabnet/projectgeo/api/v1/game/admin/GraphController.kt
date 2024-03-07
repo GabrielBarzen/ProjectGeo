@@ -1,13 +1,12 @@
 package se.gabnet.projectgeo.api.v1.game.admin
 
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import se.gabnet.projectgeo.api.v1.utils.inputvalidation.MappingInputValidation
+import se.gabnet.projectgeo.api.v1.utils.inputvalidation.ResourceAreaInputHandler
 import se.gabnet.projectgeo.model.endpoints.AdminEndpoint
 import se.gabnet.projectgeo.model.game.map.Graph
 import se.gabnet.projectgeo.model.game.map.ResourceArea
@@ -19,7 +18,7 @@ import se.gabnet.projectgeo.util.GsonUtil
 @RequestMapping(AdminEndpoint.ADMIN_GAME_BASE.ENDPOINT)
 class GraphController {
 
-    @Autowired
+
     lateinit var resourceAreaRepository: ResourceAreaRepository
 
     @RequestMapping(
@@ -29,13 +28,15 @@ class GraphController {
             consumes = ["application/json"]
     )
     fun createGraph(@RequestParam(name = "resource-area-id") resourceAreaId: String): ResponseEntity<String> {
+        val resourceAreaInputHandler = ResourceAreaInputHandler(resourceAreaRepository);
         return try {
-            val resourceArea: ResourceArea = MappingInputValidation.getResourceArea(resourceAreaId)
+
+            val resourceArea: ResourceArea = resourceAreaInputHandler.getResourceArea(resourceAreaId)
             resourceArea.createNewGraph()
             resourceAreaRepository.save(resourceArea)
             ResponseEntity(GsonUtil.repositoryGson.toJson(resourceArea), HttpStatus.OK)
-        } catch (graphInputValidationException: MappingInputValidation.AdminInputValidationException) {
-            MappingInputValidation.resolveErrorResponse(graphInputValidationException)
+        } catch (graphInputValidationException: ResourceAreaInputHandler.AdminInputValidationException) {
+            resourceAreaInputHandler.resolveErrorResponse(graphInputValidationException)
         }
     }
 
@@ -76,6 +77,8 @@ class GraphController {
             @RequestParam(name = "resource-area-id") resourceAreaId: String,
             @RequestParam(name = "graph-id") graphId: String
     ): ResponseEntity<String> {
+        val resourceAreaInputHandler = ResourceAreaInputHandler(resourceAreaRepository);
+
         return try {
             val resourceAreaGraphPair = getResourceAreaGraphPair(resourceAreaId, graphId)
             val resourceArea = resourceAreaGraphPair.first
@@ -84,14 +87,16 @@ class GraphController {
             resourceArea.graphs.remove(graph.id)
             val savedResourceArea = resourceAreaRepository.save(resourceArea)
             ResponseEntity(GsonUtil.repositoryGson.toJson(savedResourceArea), HttpStatus.OK)
-        } catch (graphInputValidationException: MappingInputValidation.AdminInputValidationException) {
-            MappingInputValidation.resolveErrorResponse(graphInputValidationException)
+        } catch (graphInputValidationException: ResourceAreaInputHandler.AdminInputValidationException) {
+            resourceAreaInputHandler.resolveErrorResponse(graphInputValidationException)
         }
     }
 
     private fun getResourceAreaGraphPair(resourceAreaId: String, graphId: String): Pair<ResourceArea, Graph> {
-        val resourceArea: ResourceArea = MappingInputValidation.getResourceArea(resourceAreaId)
-        val graph: Graph = MappingInputValidation.getGraph(graphId, resourceArea, resourceAreaId)
+        val resourceAreaInputHandler = ResourceAreaInputHandler(resourceAreaRepository);
+
+        val resourceArea: ResourceArea = resourceAreaInputHandler.getResourceArea(resourceAreaId)
+        val graph: Graph = resourceAreaInputHandler.getGraph(graphId, resourceArea)
         return Pair(resourceArea, graph)
     }
 

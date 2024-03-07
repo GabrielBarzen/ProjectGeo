@@ -1,78 +1,143 @@
+import { Marker } from 'svelte-maplibre';
 import { type Area, type Vertex, type Graph } from '../mapping/Graphs';
 import { Link } from '../mapping/Link'
-import L, { type LatLngExpression } from 'leaflet'
+import L, { map, type LatLngExpression } from 'leaflet'
 
 class ResourceArea {
-  links: Link[] = [];
-  lines: L.Polyline[] = [];
+  layers: Map<string, [Vertex, [Link]]> = new Map;
+  draggableMarkers: Map<string, [Vertex, L.CircleMarker]> = new Map;
 
-  primaryLineColor: string = "#FFFFFF";
-  debugLineColor: string = "#000000";
-  renderDebugLine: boolean = false;
+  primaryLineColor: string
+  debugLineColor: string
+  renderClickLine: boolean
+  area: Area
+  onClickFunction: (pressedLink: Link) => void
 
-  assignedMap: L.Map
-  constructor(primaryLineColor: string, debugLineColor: string, renderDebugLine: boolean) {
+  assignedMap: L.Map | undefined
+  constructor(area: Area, onClickFunction: (pressedLink: Link) => void, primaryLineColor: string = "#555555", clickLineColor: string = "#111111", renderClickLine: boolean = false) {
     this.primaryLineColor = primaryLineColor;
-    this.debugLineColor = debugLineColor
-    this.renderDebugLine = renderDebugLine;
+    this.debugLineColor = clickLineColor;
+    this.renderClickLine = renderClickLine;
+    this.area = area;
+    this.onClickFunction = onClickFunction
+    this.createLinks(area)
   }
 
-  clear() {
-    if (!(this.assignedMap == null)) {
-      this.links.forEach(element => {
-        this.assignedMap.removeLayer(element)
-      });
-      this.lines.forEach(element => {
-        this.assignedMap.removeLayer(element)
-      });
-    }
-  }
+
 
   createLinks(area: Area) {
     var checkSet: Set<string[]> = new Set()
     for (const graph of area.graphs.values()) {
       for (const vertex of graph.vertices.values()) {
-        console.log(vertex)
         for (const vertexId of vertex.connections) {
           var checkList = [vertexId, vertex.id].sort()
-          if (!checkSet.has(checkList)) {
-            checkSet.add(checkList)
-            var connectedVertex: Vertex | undefined = graph.vertices.get(vertexId)
-            if (connectedVertex != undefined) {
-              var firstCoord: number[] = [vertex.y, vertex.x]
-              var secondCoord: number[] = [connectedVertex.y, connectedVertex.x]
-
-              var link: Link = new Link(firstCoord, secondCoord, vertex.id, connectedVertex.id)
-
-
-              if (this.renderDebugLine) {
-                link.setStyle({ color: this.debugLineColor, weight: 24, opacity: 0.2 })
-              } else {
-                link.setStyle({ color: this.debugLineColor, weight: 24, opacity: 0.0 })
-              }
-
-              var line = new L.Polyline([link.first as LatLngExpression, link.second as LatLngExpression])
-              line.setStyle({ color: this.primaryLineColor, weight: 6, opacity: 0.8 })
-
-              this.lines.push(line)
-              this.links.push(link)
-            }
+          if (checkSet.has(checkList)) {
+            continue
           }
+          checkSet.add(checkList)
+          var connectedVertex: Vertex | undefined = graph.vertices.get(vertexId)
+          if (connectedVertex == undefined) {
+            continue
+          }
+
+          this.addLink(vertex, connectedVertex)
         }
       }
     }
   }
+  private addLink(firstVertex: Vertex, secondVertex: Vertex) {
+
+    var vertices = [firstVertex, secondVertex]
+    var link: Link = new Link(vertices[0], vertices[1], this)
+    link.setClickLineStyle({ color: this.debugLineColor, weight: 24, opacity: 0.2 })
+    link.setDrawLineStyle({ color: this.primaryLineColor, weight: 6, opacity: 0.8 })
+    link.setOnClickFunction(this.onClickFunction)
+
+    vertices.forEach(vertex => {
+      if (!this.layers.has(vertex.id)) {
+        var linkLineList: [Link] = [link]
+        this.layers.set(vertex.id, [vertex, linkLineList])
+        return
+      }
+      var vertexLinkEntry = this.layers.get(vertex.id)
+      if (!vertexLinkEntry) {
+        return
+      }
+      var vertexLink = vertexLinkEntry[1]
+      if (vertexLink.length > 2) {
+        throw new Error("Vertex belongs to more than two links")
+      }
+      var containsLink = false
+      vertexLink.forEach(checkLink => {
+        if (checkLink.firstVertex.id == link.firstVertex.id && checkLink.secondVertex.id == link.secondVertex.id) {
+          containsLink = true;
+        }
+      })
+      if (!containsLink) {
+        vertexLink.push(link)
+      }
+    });
+
+  }
 
   renderTo(map: L.Map) {
     this.assignedMap = map;
-    for (const link of this.links) {
-      map.addLayer(link)
+    if (this.assignedMap == undefined) {
+      return
     }
-    for (const line of this.lines) {
-      map.addLayer(line)
-    }
+
+    this.layers.forEach(layerValue => {
+      var lineLinkList: [Link] = layerValue[1]
+      lineLinkList.forEach(element => {
+        var link = element
+        if (link) {
+          link.clear()
+          link.renderTo(this.assignedMap)
+        }
+      })
+    })
   }
 
+  addDraggableMarkers() {
+    this.layers.forEach(layerValue => {
+      var vertex = layerValue[0]
+      var marker = L.circleMarker([vertex.y, vertex.x])
 
+      marker.on('mousedown', () => {
+        this.assignedMap?.dragging.disable()
+        this.assignedMap?.on('mousemove', (event) => {
+          var newLatLng = event.latlng
+          marker.setLatLng(newLatLng)
+          var layer = this.layers.get(vertex.id)
+          if (layer) {
+            layer[1].forEach(link => {
+              if (vertex.id == link.firstVertex.id) {
+                link.updatePosition(newLatLng)
+              } else {
+                link.updatePosition(undefined, newLatLng)
+              }
+            });
+          }
+        })
+      })
+      marker.on('mouseup', () => {
+        this.assignedMap?.dragging.enable()
+        this.assignedMap?.removeEventListener('mousemove')
+      })
+      this.assignedMap?.addLayer(marker)
+    })
+  }
+  clear() {
+    this.layers.forEach(layerValue => {
+      var lineLinkList: [Link] = layerValue[1]
+      lineLinkList.forEach(element => {
+        var link = element
+        if (link) {
+          link.clear()
+        }
+      });
+    });
+  }
 }
+
 export { ResourceArea }

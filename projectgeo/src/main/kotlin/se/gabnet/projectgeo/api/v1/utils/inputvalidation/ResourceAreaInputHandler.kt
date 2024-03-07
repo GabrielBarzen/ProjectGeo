@@ -1,6 +1,5 @@
 package se.gabnet.projectgeo.api.v1.utils.inputvalidation
 
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import se.gabnet.projectgeo.model.game.map.Graph
@@ -9,9 +8,9 @@ import se.gabnet.projectgeo.model.game.map.persistence.ResourceAreaRepository
 import java.util.*
 import kotlin.jvm.optionals.getOrElse
 
-object MappingInputValidation {
-    @Autowired
-    lateinit var resourceAreaRepository: ResourceAreaRepository
+
+class ResourceAreaInputHandler(val resourceAreaRepository: ResourceAreaRepository) {
+
     fun getResourceArea(resourceAreaId: String): ResourceArea {
         val parsedResourceAreaId: UUID = parseId(resourceAreaId)
                 ?: throw AdminInputValidationException(BadResourceAreaIdResponse(resourceAreaId))
@@ -19,11 +18,11 @@ object MappingInputValidation {
                 .getOrElse { throw AdminInputValidationException(ResourceAreaNotFoundResponse(resourceAreaId)) }
     }
 
-    fun getGraph(graphId: String, resourceArea: ResourceArea, resourceAreaId: String): Graph {
+    fun getGraph(graphId: String, resourceArea: ResourceArea): Graph {
         val parsedGraphid: UUID = parseId(graphId)
                 ?: throw AdminInputValidationException(BadGraphIdResponse(graphId))
         return resourceArea.graphs[parsedGraphid]
-                ?: throw AdminInputValidationException(GraphNotFoundResponse(resourceAreaId, graphId))
+                ?: throw AdminInputValidationException(GraphNotFoundResponse(resourceArea.id.toString(), graphId))
     }
 
     fun parseId(id: String): UUID? {
@@ -37,6 +36,10 @@ object MappingInputValidation {
     fun resolveErrorResponse(graphInputValidationException: AdminInputValidationException): ResponseEntity<String> {
         val graphResponse = graphInputValidationException.response;
         return ResponseEntity(graphResponse.ERROR, graphResponse.httpStatus)
+    }
+
+    fun getAllResourceAreas(): List<ResourceArea> {
+        return resourceAreaRepository.findAll().toList()
     }
 
 
