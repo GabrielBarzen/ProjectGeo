@@ -13,5 +13,9 @@ sealed class AdminEndpoint {
         const val ENDPOINT = "/resource-area"
     }
 
+    data object VERTEX : AdminEndpoint() {
+        const val ENDPOINT = "/vertex"
+    }
+
 
 }

@@ -1,25 +1,28 @@
 package se.gabnet.projectgeo.api.v1.game.admin
 
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import se.gabnet.projectgeo.api.v1.utils.inputvalidation.ResourceAreaInputHandler
 import se.gabnet.projectgeo.model.endpoints.AdminEndpoint
 import se.gabnet.projectgeo.model.game.map.Graph
 import se.gabnet.projectgeo.model.game.map.ResourceArea
+import se.gabnet.projectgeo.model.game.map.persistence.GraphRepository
 import se.gabnet.projectgeo.model.game.map.persistence.ResourceAreaRepository
 import se.gabnet.projectgeo.util.GsonUtil
+import java.util.*
 
 
 @RestController
 @RequestMapping(AdminEndpoint.ADMIN_GAME_BASE.ENDPOINT)
 class GraphController {
 
-
+    @Autowired
     lateinit var resourceAreaRepository: ResourceAreaRepository
+
+    @Autowired
+    lateinit var graphRepository: GraphRepository
 
     @RequestMapping(
             AdminEndpoint.GRAPH.ENDPOINT,
@@ -57,16 +60,6 @@ class GraphController {
         }
     }
 
-    @RequestMapping(
-            AdminEndpoint.GRAPH.ENDPOINT,
-            method = [RequestMethod.PUT],
-    )
-    fun updateGraph(
-            @RequestParam(name = "resource-area-id") resourceAreaId: String,
-            @RequestParam(name = "graph-id") graphId: String
-    ): ResponseEntity<String> {
-        return ResponseEntity("{ MESSAGE : \"Update vertices directly ($)\" }", HttpStatus.METHOD_NOT_ALLOWED)
-    }
 
     @RequestMapping(
             AdminEndpoint.GRAPH.ENDPOINT,
@@ -99,6 +92,29 @@ class GraphController {
         val graph: Graph = resourceAreaInputHandler.getGraph(graphId, resourceArea)
         return Pair(resourceArea, graph)
     }
+
+    @RequestMapping(
+            AdminEndpoint.GRAPH.ENDPOINT,
+            method = [RequestMethod.PUT],
+    )
+    fun updateGraph(
+            @RequestParam(name = "graph-id") graphId: String,
+            @RequestBody body: String
+    ): ResponseEntity<String> {
+        val updateGraphRequest = GsonUtil.gson.fromJson(body, UpdateGraphRequest::class.java)
+        val resourceAreaInputHandler = ResourceAreaInputHandler(resourceAreaRepository);
+        val graph = resourceAreaInputHandler.getGraph(graphId, graphRepository)
+        val sourceVertex = graph.vertices[UUID.fromString(updateGraphRequest.sourceVertex)]
+        val destinationVertex = graph.vertices[UUID.fromString(updateGraphRequest.destinationVertex)]
+        graph.removeVertexConnection(sourceVertex!!, destinationVertex!!)
+        val insertedVetex = graph.addVertex(updateGraphRequest.y!!, updateGraphRequest.x!!)
+        graph.addVertexConnection(sourceVertex, insertedVetex)
+        graph.addVertexConnection(insertedVetex, destinationVertex)
+        graphRepository.save(graph)
+        return ResponseEntity(HttpStatus.OK)
+    }
+
+    data class UpdateGraphRequest(val sourceVertex: String?, val destinationVertex: String?, val y: Double?, val x: Double?)
 
 }
 

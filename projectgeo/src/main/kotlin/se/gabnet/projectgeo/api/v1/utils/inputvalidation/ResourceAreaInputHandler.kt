@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import se.gabnet.projectgeo.model.game.map.Graph
 import se.gabnet.projectgeo.model.game.map.ResourceArea
+import se.gabnet.projectgeo.model.game.map.persistence.GraphRepository
 import se.gabnet.projectgeo.model.game.map.persistence.ResourceAreaRepository
 import java.util.*
 import kotlin.jvm.optionals.getOrElse
@@ -22,7 +23,14 @@ class ResourceAreaInputHandler(val resourceAreaRepository: ResourceAreaRepositor
         val parsedGraphid: UUID = parseId(graphId)
                 ?: throw AdminInputValidationException(BadGraphIdResponse(graphId))
         return resourceArea.graphs[parsedGraphid]
-                ?: throw AdminInputValidationException(GraphNotFoundResponse(resourceArea.id.toString(), graphId))
+                ?: throw AdminInputValidationException(GraphNotFoundInResourceAreaResponse(resourceArea.id.toString(), graphId))
+    }
+
+    fun getGraph(graphId: String, graphRepository: GraphRepository): Graph {
+        val parsedGraphId: UUID = parseId(graphId)
+                ?: throw AdminInputValidationException(BadGraphIdResponse(graphId))
+        return graphRepository.findById(parsedGraphId)
+                .getOrElse { throw AdminInputValidationException(GraphNotFoundResponse(parsedGraphId.toString())) }
     }
 
     fun parseId(id: String): UUID? {
@@ -59,9 +67,11 @@ class ResourceAreaInputHandler(val resourceAreaRepository: ResourceAreaRepositor
     class BadGraphIdResponse(graphId: String) :
             ErrorResponse("Error parsing resource graph id (Malformed id: $graphId)", HttpStatus.BAD_REQUEST)
 
-    class GraphNotFoundResponse(resourceAreaId: String, graphId: String) :
+    class GraphNotFoundInResourceAreaResponse(resourceAreaId: String, graphId: String) :
             ErrorResponse("Graph area not found in resource area (graph-id: $graphId, resource-area-id: $resourceAreaId)", HttpStatus.BAD_REQUEST)
 
+    class GraphNotFoundResponse(graphId: String) :
+            ErrorResponse("Graph area not found in resource area (graph-id: $graphId)", HttpStatus.BAD_REQUEST)
 
     class AdminInputValidationException(val response: ErrorResponse) : Throwable()
 

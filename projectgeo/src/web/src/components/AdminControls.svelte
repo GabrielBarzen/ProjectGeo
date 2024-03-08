@@ -1,5 +1,5 @@
 <script lang="ts">
-  import L, { CircleMarker, type LatLngExpression } from "leaflet"
+  import L, { CircleMarker, LatLng, latLng, type LatLngExpression } from "leaflet"
   import "leaflet/dist/leaflet.css"
   import { type Area, type Graph, type Vertex } from "../lib/mapping/Graphs"
   import ConfirmInput from "../ConfirmInput.svelte"
@@ -8,6 +8,8 @@
   import { ResourceArea } from "../lib/game/ResourceArea"
   import { Link } from "../lib/mapping/Link"
   import * as JSONParser from "../lib/json/Parser"
+  import * as AdminInteface from "../lib/api/AdminInterface"
+  import * as GeographyMath from "../lib/math/Geography"
 
   enum EditMode {
     None,
@@ -26,12 +28,9 @@
   var currentEditMode = EditMode.None
   var currentEditModeState = EditModeState.None
 
-  var createdAreaId: string
-  var name: string = "TestName" //TODO Replace with user input
   var createList: number[][]
   var markers: CircleMarker[]
   var createMarkerList: L.Layer[] = []
-  var createdResourceArea: ResourceArea
   var resourceAreas: ResourceArea[] = []
 
   export var map: L.Map | undefined
@@ -62,7 +61,7 @@
         var lng = e.latlng.lng
         var validated = true
         createList.forEach((coordinate: number[]) => {
-          if (getDistanceFromLatLonInKm(coordinate, [lat, lng]) < 0.05) {
+          if (GeographyMath.getDistanceInKm(coordinate, [lat, lng]) < 0.05) {
             createList = createList.filter((item) => item != coordinate)
             validated = false
           }
@@ -93,185 +92,117 @@
     }
   }
 
-  function getDistanceFromLatLonInKm(fromYX: number[], toYX: number[]) {
-    var R = 6371 // Radius of the earth in km
-    var dLat = deg2rad(fromYX[0] - toYX[0]) // deg2rad below
-    var dLon = deg2rad(fromYX[1] - toYX[1])
-    var a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(deg2rad(toYX[0])) *
-        Math.cos(deg2rad(fromYX[0])) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2)
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-    var d = R * c // Distance in km
-    return d
-  }
-
-  function deg2rad(deg: number) {
-    return deg * (Math.PI / 180)
-  }
-
   async function renderAllAreas() {
-    var data = await fetch("/api/v1/game/admin/resource-area").then()
+    var data = await AdminInteface.fetchAllAreas()
     var areaData: any = await data.json()
+
     if (resourceAreas) {
-      resourceAreas.forEach((area) => {
-        area.clear()
+      resourceAreas.forEach((resourceArea) => {
+        resourceArea.clear()
       })
     }
+
     JSONParser.parseAreaJSONList(areaData).forEach((area) => {
-      var resourceArea: ResourceArea = new ResourceArea(area, resourceAreaOnClick)
-      if (map) {
-        resourceArea.renderTo(map)
-        resourceAreas.push(resourceArea)
-        resourceArea.addDraggableMarkers()
-      }
+      renderArea(area)
     })
   }
 
-  var pressedResourceAreaLink: Link | undefined
-  function resourceAreaOnClick(pressedLink: Link) {
-    switch (currentEditMode) {
-      case EditMode.Delete:
-        pressedResourceAreaLink = pressedLink
-        currentEditModeState = EditModeState.Confirm
-        break
-    }
-  }
-
-  async function executeResourceAreaCreateRequest(pointlist: Number[][], name: string) {
-    var body: any = { points: pointlist, name: name }
-
-    var data = await fetch("/api/v1/game/admin/resource-area", {
-      body: JSON.stringify(body),
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-    var areaData: any = await data.json()
-    var area = parseAreaJSON(areaData)
-
-    createdResourceArea = new ResourceArea(area, resourceAreaOnClick, "#FF00FF", "#00FFFF", true)
-    resourceAreas.push(createdResourceArea)
-
+  function renderArea(area: Area) {
+    var resourceArea: ResourceArea = new ResourceArea(area, "#00ff00", "#ff0000", true)
     if (map) {
-      createdResourceArea.renderTo(map)
+      resourceArea.renderTo(map)
     }
+    resourceArea.setOnLineClickFunction((graph, pressedLink, position) => {
+      console.log("Clicked link: ")
+      console.log(pressedLink)
+      splitGraphLine(graph, pressedLink[0], pressedLink[1], position)
+    })
+    resourceArea.addMarkers(
+      (vertex: Vertex) => {
+        console.log("Clicked: ")
+        console.log(vertex)
+      },
+      (vertex: Vertex) => {
+        console.log("Dragged: ")
+        console.log(vertex)
+        updateVertexPosition(vertex)
+      },
+      true
+    )
+    resourceAreas.push(resourceArea)
   }
 
-  async function executeRemoveRequest(areaId: string) {
-    var data = await fetch("/api/v1/game/admin/resource-area?resource-area-id=" + areaId, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
+  async function updateVertexPosition(vertex: Vertex) {
+    await AdminInteface.updateVertexPosition(vertex)
     renderAllAreas()
   }
 
-  function parseAreaJSON(areaJSON: any): Area {
-    var area: Area = areaJSON
-    area.graphs = new Map(Object.entries(area.graphs))
-    for (const graph of area.graphs.values()) {
-      graph.vertices = new Map(Object.entries(graph.vertices))
-    }
-    return area
+  async function splitGraphLine(
+    graph: Graph,
+    source: Vertex,
+    destination: Vertex,
+    position: LatLng
+  ) {
+    await AdminInteface.splitGraphLine(graph, source, destination, position.lat, position.lng)
+    renderAllAreas()
   }
 
   function clear() {
+    resourceAreas.forEach((area) => {
+      area.clear()
+    })
     clearLayers()
     if (map) {
       map.off("click")
     }
-    resourceAreas.forEach((resourceArea) => {
-      resourceArea.clear()
-    })
     currentEditMode = EditMode.None
     currentEditModeState = EditModeState.None
     renderAllAreas()
   }
 
   function clearLayers() {
-    createMarkerList.forEach((layer) => map?.removeLayer(layer))
+    map?.eachLayer((layer) => {
+      map?.removeLayer(layer)
+    })
     createList = []
     createMarkerList = []
   }
 
   async function handleActionMessage(event: any) {
     var action = event.detail.action
+    console.log("ENTER MODE: " + action)
     switch (action) {
       case "Create":
-        console.log("IsCreateAction")
-        currentEditMode = EditMode.CreateGraph
-        currentEditModeState = EditModeState.Action
-        createResourceArea()
-
         break
       case "Edit":
-        console.log("IsEditAction")
-        currentEditMode = EditMode.None //TODO Not Implemented
-
-        break
-      case "Delete":
-        console.log("IsDeleteAction")
-        currentEditMode = EditMode.Delete
-        currentEditModeState = EditModeState.Action
-
         break
     }
+    console.log("ENTER MODE END ")
   }
 
   async function handleConfirmMessage(event: any) {
     var confirm = event.detail.confirmed
+    console.log("CONFIRMED: " + confirm)
     if (currentEditModeState == EditModeState.Confirm) {
       switch (currentEditMode) {
         case EditMode.CreateGraph:
-          if (confirm) {
-            await executeResourceAreaCreateRequest(createList, name)
-
-            createList = []
-            if (map) {
-              map.off("click")
-            }
-
-            currentEditMode = EditMode.CreateResourceArea
-            currentEditModeState = EditModeState.Confirm
-          } else {
-            clear()
-          }
-
+          console.log("MODE: " + confirm)
           break
         case EditMode.CreateResourceArea:
-          if (confirm) {
-            currentEditMode = EditMode.None
-            currentEditModeState = EditModeState.None
-            createdResourceArea.clear()
-            clear()
-          } else {
-            if (createdResourceArea.area.id) {
-              executeRemoveRequest(createdResourceArea.area.id)
-            }
-            clear()
-          }
-
+          console.log("MODE: " + confirm)
           break
         case EditMode.Delete:
-          if (confirm) {
-            if (pressedResourceAreaLink) {
-              executeRemoveRequest(pressedResourceAreaLink.resourceArea.area.id)
-            }
-            clear()
-          } else {
-            clear()
-          }
+          console.log("MODE: " + confirm)
           break
         case EditMode.None:
+          console.log("MODE: " + confirm)
+          break
         case EditMode.Edit:
-          console.log("Not implemented")
+          console.log("MODE: " + confirm)
+          break
       }
     }
+    console.log("CONFIRMED END ")
   }
 </script>
 

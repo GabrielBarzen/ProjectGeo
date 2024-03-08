@@ -2,7 +2,6 @@
   export enum Action {
     Create,
     Edit,
-    Delete,
   }
 </script>
 

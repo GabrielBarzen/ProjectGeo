@@ -9,8 +9,8 @@ import java.util.*
 
 @Entity
 class Vertex(
-        @Expose val y: Double,
-        @Expose val x: Double,
+        @Expose var y: Double,
+        @Expose var x: Double,
         @Expose val connections: MutableSet<UUID>,
         @ManyToOne
         @JoinColumn

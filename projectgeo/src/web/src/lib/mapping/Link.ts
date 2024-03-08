@@ -1,18 +1,19 @@
 import L, { LatLng, type LatLngExpression } from "leaflet"
-import { ResourceArea } from "../game/ResourceArea"
-import type { Vertex } from "./Graphs"
+import type { Graph, Vertex } from "./Graphs"
+import type { ResourceGraph } from "../game/ResourceGraph"
 class Link {
   firstVertex: Vertex
   secondVertex: Vertex
   clickLine: L.Polyline
   drawLine: L.Polyline
-  resourceArea: ResourceArea
+  resourceGraph: ResourceGraph
   assignedMap: L.Map | undefined
+  debugIdentifier = Math.random() * 1000
 
-  constructor(firstVertex: Vertex, secondVertex: Vertex, resourceArea: ResourceArea) {
+  constructor(firstVertex: Vertex, secondVertex: Vertex, resourceGraph: ResourceGraph) {
     this.firstVertex = firstVertex
     this.secondVertex = secondVertex
-    this.resourceArea = resourceArea
+    this.resourceGraph = resourceGraph
     var firstPosition: LatLngExpression = [firstVertex.y, firstVertex.x] as LatLngExpression
     var secondPosition: LatLngExpression = [secondVertex.y, secondVertex.x] as LatLngExpression
     this.clickLine = L.polyline([firstPosition, secondPosition])
@@ -39,8 +40,11 @@ class Link {
   setClickLineStyle(style: Object) {
     this.clickLine.setStyle(style)
   }
-  setOnClickFunction(onClickCallback: (pressedLink: Link) => void) {
-    this.clickLine.on("click", () => { onClickCallback(this) })
+  setOnClickFunction(onClickCallback: (graph: Graph, pressedEdge: [Vertex, Vertex], position: LatLng) => void) {
+    this.clickLine.clearAllEventListeners()
+    this.clickLine.on("click", (e) => {
+      onClickCallback(this.resourceGraph.graph, [this.firstVertex, this.secondVertex], e.latlng)
+    })
   }
   renderTo(map?: L.Map) {
     this.assignedMap = map

@@ -27,6 +27,7 @@
   "dependencies": {
     "@fullhuman/postcss-purgecss": "^5.0.0",
     "leaflet": "^1.9.4",
+    "svelte-device-info": "^1.0.4",
     "svelte-maplibre": "^0.8.1",
     "vite-plugin-mkcert": "^1.17.4"
   }
