@@ -6,9 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import se.gabnet.projectgeo.api.v1.utils.inputvalidation.ResourceAreaInputHandler
+import se.gabnet.projectgeo.api.v1.utils.inputvalidation.AdminInputValidationHandling.AdminInputValidationException
 import se.gabnet.projectgeo.api.v1.utils.inputvalidation.VertexInputHandler
 import se.gabnet.projectgeo.model.endpoints.AdminEndpoint
+import se.gabnet.projectgeo.model.game.map.persistence.GraphRepository
 import se.gabnet.projectgeo.model.game.map.persistence.VertexRepository
 
 @RestController
@@ -17,6 +18,10 @@ class VertexController {
 
     @Autowired
     lateinit var vertexRepository: VertexRepository
+
+
+    @Autowired
+    lateinit var graphRepository: GraphRepository
 
     var repositoryGson: Gson = GsonBuilder().excludeFieldsWithoutExposeAnnotation().create()
     var gson: Gson = GsonBuilder().create()
@@ -34,7 +39,26 @@ class VertexController {
             vertex.x = updateVertexRequest.x
             vertexRepository.save(vertex)
             ResponseEntity(HttpStatus.OK)
-        } catch (e: ResourceAreaInputHandler.AdminInputValidationException) {
+        } catch (e: AdminInputValidationException) {
+            val response = e.response
+            ResponseEntity(response.ERROR, response.httpStatus)
+        }
+    }
+
+    @RequestMapping(
+            AdminEndpoint.VERTEX.ENDPOINT,
+            method = [RequestMethod.DELETE],
+    )
+    fun deleteVertex(@RequestParam(name = "vertex-id") vertexId: String): ResponseEntity<String> {
+        val vertexInputHandler = VertexInputHandler(vertexRepository);
+        return try {
+            val vertex = vertexInputHandler.getVertex(vertexId)
+            val graph = vertex.graph
+
+            graph.removeVertex(vertex)
+            graphRepository.save(graph)
+            ResponseEntity(repositoryGson.toJson(graph), HttpStatus.OK)
+        } catch (e: AdminInputValidationException) {
             val response = e.response
             ResponseEntity(response.ERROR, response.httpStatus)
         }

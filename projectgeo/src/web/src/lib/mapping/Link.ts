@@ -9,17 +9,18 @@ class Link {
   resourceGraph: ResourceGraph
   assignedMap: L.Map | undefined
   debugIdentifier = Math.random() * 1000
+  drawLineStyle: L.PolylineOptions = { color: "#555555", weight: 24, opacity: 0.0 }
+  clickLineStyle: L.PolylineOptions = { color: "#111111", weight: 6, opacity: 0.8 }
 
   constructor(firstVertex: Vertex, secondVertex: Vertex, resourceGraph: ResourceGraph) {
     this.firstVertex = firstVertex
     this.secondVertex = secondVertex
     this.resourceGraph = resourceGraph
-    var firstPosition: LatLngExpression = [firstVertex.y, firstVertex.x] as LatLngExpression
-    var secondPosition: LatLngExpression = [secondVertex.y, secondVertex.x] as LatLngExpression
-    this.clickLine = L.polyline([firstPosition, secondPosition])
-    this.drawLine = L.polyline([firstPosition, secondPosition])
-    this.clickLine.setStyle({ color: "#555555", weight: 24, opacity: 0.0 })
-    this.drawLine.setStyle({ color: "#111111", weight: 6, opacity: 0.8 })
+    const firstPosition: LatLngExpression = [firstVertex.y, firstVertex.x] as LatLngExpression
+    const secondPosition: LatLngExpression = [secondVertex.y, secondVertex.x] as LatLngExpression
+    this.clickLine = L.polyline([firstPosition, secondPosition], this.clickLineStyle)
+    this.drawLine = L.polyline([firstPosition, secondPosition], this.drawLineStyle)
+
   }
 
   updatePosition(firstPosition?: LatLngExpression, secondPosition?: LatLngExpression) {
@@ -34,10 +35,12 @@ class Link {
       this.drawLine.setLatLngs([firstPosition, this.clickLine.getLatLngs().at(1) as LatLngExpression])
     }
   }
-  setDrawLineStyle(style: Object) {
+  setDrawLineStyle(style: L.PolylineOptions) {
+    this.drawLineStyle = style
     this.drawLine.setStyle(style)
   }
-  setClickLineStyle(style: Object) {
+  setClickLineStyle(style: L.PolylineOptions) {
+    this.clickLineStyle = style
     this.clickLine.setStyle(style)
   }
   setOnClickFunction(onClickCallback: (graph: Graph, pressedEdge: [Vertex, Vertex], position: LatLng) => void) {

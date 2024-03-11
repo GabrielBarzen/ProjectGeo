@@ -1,13 +1,12 @@
-import { Marker } from 'svelte-maplibre';
-import { type Area, type Vertex, type Graph } from '../mapping/Graphs';
+import { type Vertex, type Graph } from '../mapping/Graphs';
 import { Link } from '../mapping/Link'
-import L, { map, type LatLngExpression, LatLng } from 'leaflet'
+import L, { LatLng } from 'leaflet'
 import { VertexMarker } from '../mapping/VertexMarker';
 import type { ResourceArea } from './ResourceArea';
 
 class ResourceGraph {
-  links: Map<string, [Vertex, [Link]]> = new Map;
-  vertexMarkers: Map<string, [Vertex, VertexMarker]> = new Map;
+  links: Map<string, [Vertex, Link[]]> = new Map;
+  markers: Map<string, [Vertex, VertexMarker]> = new Map;
 
   primaryLineColor: string
   debugLineColor: string
@@ -27,21 +26,19 @@ class ResourceGraph {
     this.renderClickLine = renderClickLine;
     this.graph = graph
     this.parentArea = parentArea
-    this.createLinks()
   }
 
-
-
   createLinks() {
-    var checkSet: Set<string[]> = new Set()
+    const checkSet: Set<string> = new Set()
+    this.links.clear()
     for (const vertex of this.graph.vertices.values()) {
       for (const vertexId of vertex.connections) {
-        var checkList = [vertexId, vertex.id].sort()
+        const checkList = [vertexId, vertex.id].sort().toString()
         if (checkSet.has(checkList)) {
           continue
         }
         checkSet.add(checkList)
-        var connectedVertex: Vertex | undefined = this.graph.vertices.get(vertexId)
+        const connectedVertex: Vertex | undefined = this.graph.vertices.get(vertexId)
         if (connectedVertex == undefined) {
           continue
         }
@@ -50,144 +47,67 @@ class ResourceGraph {
       }
     }
   }
+
   private addLink(firstVertex: Vertex, secondVertex: Vertex) {
 
-    var vertices = [firstVertex, secondVertex]
-    var link: Link = new Link(vertices[0], vertices[1], this)
+    const vertices = [firstVertex, secondVertex]
+    const link: Link = new Link(vertices[0], vertices[1], this)
     link.setClickLineStyle({ color: this.debugLineColor, weight: 24, opacity: 0.2 })
     link.setDrawLineStyle({ color: this.primaryLineColor, weight: 6, opacity: 0.8 })
 
-    vertices.forEach(vertex => {
-      if (!this.links.has(vertex.id)) {
-        var linkLineList: [Link] = [link]
-        this.links.set(vertex.id, [vertex, linkLineList])
-        return
-      }
-      var vertexLinkEntry = this.links.get(vertex.id)
-      if (!vertexLinkEntry) {
-        return
-      }
-      var vertexLink = vertexLinkEntry[1]
-      if (vertexLink.length > 2) {
-        throw new Error("Vertex belongs to more than two links")
-      }
-      var containsLink = false
-      vertexLink.forEach(checkLink => {
-        if (checkLink.firstVertex.id == link.firstVertex.id && checkLink.secondVertex.id == link.secondVertex.id) {
-          containsLink = true;
-        }
-      })
-      if (!containsLink) {
-        vertexLink.push(link)
-      }
-    });
+    const firstLinkEntry = this.links.get(firstVertex.id)
+    const secondLinkEntry = this.links.get(secondVertex.id)
 
-  }
-
-  renderTo(map: L.Map) {
-    this.assignedMap = map;
-    if (this.assignedMap == undefined) {
-      return
+    if (!firstLinkEntry) {
+      this.links.set(firstVertex.id, [firstVertex, [link]])
     }
+    if (!secondLinkEntry) {
+      this.links.set(secondVertex.id, [secondVertex, [link]])
+    }
+    if (!firstLinkEntry && !secondLinkEntry) return
 
-    this.links.forEach(layerValue => {
-      var lineLinkList: [Link] = layerValue[1]
-      lineLinkList.forEach(element => {
-        var link = element
-        if (link) {
-          link.clear()
-          link.renderTo(this.assignedMap)
-        }
-      })
-    })
-  }
+    const entries = [this.links.get(firstVertex.id), this.links.get(secondVertex.id)]
 
-  addMarkers(draggable: boolean) {
-    this.links.forEach(layerValue => {
-      var vertex = layerValue[0]
-      var marker = new VertexMarker(this, vertex, [vertex.y, vertex.x])
-      var onPhone = (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
-      if (draggable && !onPhone) {
-        marker.on('mousedown', () => {
-          this.assignedMap?.dragging.disable()
-          this.assignedMap?.on('mousemove', (event) => {
-            var newLatLng = event.latlng
-            marker.setLatLng(newLatLng)
-            var layer = this.links.get(vertex.id)
-            if (layer) {
-              layer[1].forEach(link => {
-                if (vertex.id == link.firstVertex.id) {
-                  link.updatePosition(newLatLng)
-                } else {
-                  link.updatePosition(undefined, newLatLng)
-                }
-              });
-            }
-          })
-        })
-        marker.on('mouseup', () => {
-          this.assignedMap?.dragging.enable()
-          this.assignedMap?.removeEventListener('mousemove')
-        })
-        this.assignedMap?.addLayer(marker)
-
-      } else if (draggable && onPhone) {
-        this.addPhoneDragFunction(marker, vertex)
-
-      } else {
-        marker.on("click", () => {
-          this.assignedMap?.addLayer(marker)
-        })
+    entries.forEach((entry) => {
+      if (!entry) {
+        throw new Error("Vertex entry still undefined after setting")
       }
-      this.vertexMarkers.set(vertex.id, [vertex, marker])
-    })
-  }
-  addPhoneDragFunction(marker: VertexMarker, vertex: Vertex) {
-    marker.addOneTimeEventListener("click", (markerEvent) => {
-      this.assignedMap?.addOneTimeEventListener("click", (mapEvent) => {
 
-        if (marker.getLatLng().distanceTo(mapEvent.latlng) < 100) {
-          marker.setDragged(false)
-          marker.clearAllEventListeners()
-        } else {
-          marker.setDragged(true)
-          marker.setLatLng(mapEvent.latlng)
-          var newLatLng = mapEvent.latlng
-          var layer = this.links.get(vertex.id)
-          if (layer) {
-            layer[1].forEach(link => {
-              if (vertex.id == link.firstVertex.id) {
-                link.updatePosition(newLatLng)
-              } else {
-                link.updatePosition(undefined, newLatLng)
-              }
-            });
-          }
-        }
-        marker.clearAllEventListeners()
-        this.addPhoneDragFunction(marker, vertex)
-      })
+      if (!entry[1].includes(link)) {
+        entry[1].push(link)
+      }
+
+      this.links.set(entry[0].id, [entry[0], entry[1]])
     })
-    this.assignedMap?.addLayer(marker)
+
   }
 
-  clear() {
+  addMarkers(draggable: boolean, onVertexClickFunction?: (vertex: Vertex) => void, onVertexDragFunction?: (vertex: Vertex) => void) {
+    this.markers.clear()
     this.links.forEach(layerValue => {
-      var lineLinkList: [Link] = layerValue[1]
-      lineLinkList.forEach(element => {
-        var link = element
-        if (link) {
-          link.clear()
-        }
-      });
-    });
-    this.vertexMarkers.forEach(markerValue => {
-      this.assignedMap?.removeLayer(markerValue[1])
+      const vertex = layerValue[0]
+      const marker = new VertexMarker(this, vertex, [vertex.y, vertex.x], layerValue[1])
+      marker.setStyle({ weight: 4 })
+      if (onVertexClickFunction && (onVertexDragFunction || !draggable)) {
+        this.setVertexFunction(marker, onVertexClickFunction, onVertexDragFunction)
+      }
+      if (this.assignedMap) {
+        marker.renderTo(this.assignedMap)
+      }
+      this.markers.set(vertex.id, [vertex, marker])
+
     })
   }
 
+  setVertexFunction(marker: VertexMarker, onVertexClickFunction?: (vertex: Vertex) => void, onVertexDragFunction?: (vertex: Vertex) => void) {
+    marker.clickedFunction = onVertexClickFunction!
+    if (onVertexDragFunction) {
+      marker.draggedFunction = onVertexDragFunction!
+    }
+  }
 
   setOnLineClickFunction(onLineClickFunction: (graph: Graph, pressedLink: [Vertex, Vertex], position: LatLng) => void) {
+
     this.links.forEach((linkEntry) => {
       linkEntry[1].forEach((link) => {
         link.setOnClickFunction(onLineClickFunction)
@@ -196,24 +116,43 @@ class ResourceGraph {
     })
   }
 
-  setOnVertexClickFunction(onVertexClickFunction: (vertex: Vertex) => void) {
-    this.vertexMarkers.forEach((entry) => {
-      var marker = entry[1]
-      if (marker) {
-        marker.setOnVertexClickFunction(onVertexClickFunction)
-      }
+
+  renderTo(map: L.Map) {
+    this.createLinks()
+    this.assignedMap = map;
+
+    if (this.assignedMap == undefined) {
+      return
+    }
+
+    this.links.forEach(layerValue => {
+      const linkEntry: Link[] = layerValue[1]
+      linkEntry.forEach(link => {
+        link.clear()
+        link.renderTo(this.assignedMap!)
+      })
+    })
+
+    this.markers.forEach(layerValue => {
+      const marker: VertexMarker = layerValue[1]
+      marker.renderTo(this.assignedMap!)
     })
   }
 
-  setOnVertexDragFunction(onVertexDragFunction: (vertex: Vertex) => void) {
-    this.vertexMarkers.forEach((entry) => {
-      var marker = entry[1]
-      if (marker) {
-        marker.setOnVertexDragFunction(onVertexDragFunction)
-      }
+  clear() {
+    this.links.forEach(layerValue => {
+      const linkEntry: Link[] = layerValue[1]
+      linkEntry.forEach(link => {
+        link.clear()
+      })
     })
-  }
+    this.markers.forEach(layerValue => {
+      const marker: VertexMarker = layerValue[1]
+      marker.clear()
+    })
 
+  }
 }
 
 export { ResourceGraph }
+

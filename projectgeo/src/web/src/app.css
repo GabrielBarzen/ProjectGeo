@@ -1,18 +1,13 @@
-  @tailwind base;
-  @tailwind components;
-  @tailwind utilities;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 
   html,
   body {
     margin: 0;
     min-width: 320px;
-  }
-  html {
-    height: 100%;
-  }
-  body {
-    height: 100%;
-    width: 100%;
+    @apply size-full
   }
   #app {
     height: 100%;
@@ -49,5 +44,4 @@
   .btn-abort:active {
     @apply bg-red-800;
   }
-
 

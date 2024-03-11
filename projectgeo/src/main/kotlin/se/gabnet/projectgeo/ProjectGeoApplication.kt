@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 @ComponentScan("se.gabnet.projectgeo.api.v1")
+@ComponentScan("se.gabnet.projectgeo.index")
 @SpringBootApplication
 class ProjectGeoApplication
 

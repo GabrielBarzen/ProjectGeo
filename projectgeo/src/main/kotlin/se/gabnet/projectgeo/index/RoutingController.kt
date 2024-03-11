@@ -5,9 +5,9 @@ import org.springframework.web.bind.annotation.RequestMapping
 
 
 @Controller
-class IndexController {
-    @RequestMapping("/")
-    fun index(): String {
-        return "index.html"
+class RoutingController {
+    @RequestMapping(value = ["/{path:[^\\.]*}"])
+    fun redirect(): String {
+        return "forward:/"
     }
 }

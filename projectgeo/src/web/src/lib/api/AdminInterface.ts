@@ -1,10 +1,12 @@
 import type { Graph, Vertex } from "../mapping/Graphs"
 
 
-export async function createArea(pointlist: number[][], name: string): Promise<Response> {
-  var body: any = { points: pointlist, name: name }
+const baseAdminUrl = "/api/v1/game/admin/"
 
-  var data = await fetch("/api/v1/game/admin/resource-area", {
+export async function createArea(pointlist: number[][], name: string): Promise<Response> {
+  const body = { points: pointlist, name: name }
+
+  const data = await fetch(`${baseAdminUrl}resource-area`, {
     body: JSON.stringify(body),
     method: "POST",
     headers: {
@@ -14,8 +16,8 @@ export async function createArea(pointlist: number[][], name: string): Promise<R
   return data
 }
 
-export async function deleteArea(areaId: number): Promise<Response> {
-  var data = await fetch("/api/v1/game/admin/resource-area?resource-area-id=" + areaId, {
+export async function deleteArea(areaId: string): Promise<Response> {
+  const data = await fetch(`${baseAdminUrl}resource-area?resource-area-id=${areaId}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -26,16 +28,16 @@ export async function deleteArea(areaId: number): Promise<Response> {
 
 
 export async function fetchAllAreas(): Promise<Response> {
-  var data = await fetch("/api/v1/game/admin/resource-area", {
+  const data = await fetch(`${baseAdminUrl}resource-area`, {
     method: "GET",
   })
   return data
 }
 
 export async function updateVertexPosition(vertex: Vertex): Promise<Response> {
-  let url = `/api/v1/game/admin/vertex?vertex-id=${vertex.id}`
-  var body: any = JSON.stringify({ y: vertex.y, x: vertex.x })
-  var data = await fetch(url, {
+  const url = `${baseAdminUrl}vertex?vertex-id=${vertex.id}`
+  const body = JSON.stringify({ y: vertex.y, x: vertex.x })
+  const data = await fetch(url, {
     method: "PUT",
     body: body
   })
@@ -45,16 +47,40 @@ export async function updateVertexPosition(vertex: Vertex): Promise<Response> {
 
 
 export async function splitGraphLine(graph: Graph, source: Vertex, destination: Vertex, y: number, x: number) {
-  let url = `/api/v1/game/admin/graph?graph-id=${graph.id}`
-  var body: any = JSON.stringify({
+  const url = `${baseAdminUrl}graph?graph-id=${graph.id}`
+  const body = JSON.stringify({
     sourceVertex: source.id,
     destinationVertex: destination.id,
     y: y,
     x: x
   })
-  var data = await fetch(url, {
+  const data = await fetch(url, {
     method: "PUT",
     body: body
+  })
+  return data
+}
+
+
+
+export async function getGraphParentAreaId(graphId: string): Promise<Response> {
+  const url = `${baseAdminUrl}graph/parent?graph-id=${graphId}`
+  const data = await fetch(url, {
+    method: "GET",
+  })
+
+  return data
+
+}
+
+
+
+export async function deleteVertex(id: string): Promise<Response> {
+  const data = await fetch(`${baseAdminUrl}vertex?vertex-id=${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
   })
   return data
 }

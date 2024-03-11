@@ -1,10 +1,11 @@
 package se.gabnet.projectgeo.model.game.map
 
+
 import com.google.gson.annotations.Expose
 import jakarta.persistence.*
+import se.gabnet.projectgeo.api.v1.utils.inputvalidation.AdminInputValidationHandling.AdminInputValidationException
+import se.gabnet.projectgeo.api.v1.utils.inputvalidation.VertexInputHandler
 import se.gabnet.projectgeo.util.GeographyUtil
-
-
 import java.util.*
 
 
@@ -51,9 +52,32 @@ class Graph(
     }
 
     fun removeVertex(vertexToRemove: Vertex): Vertex? {
-        for (vertex in vertices.values) {
-            vertex.connections.remove(vertexToRemove.id)
+        if (this.vertices.size <= 3) {
+            throw AdminInputValidationException(VertexInputHandler.TooFewVertices())
         }
+        val neighbours: MutableSet<UUID> = mutableSetOf()
+        for (connection in vertexToRemove.connections) {
+            neighbours.add(connection)
+        }
+
+        for (neighbourId in neighbours) {
+            val neighbour = vertices.get(neighbourId)
+            if (neighbour != null) {
+                this.removeVertexConnection(vertexToRemove, neighbour)
+            }
+        }
+
+        for (sourceId in neighbours) {
+            for (destinationId in neighbours) {
+                if (sourceId == destinationId) continue
+                val source = vertices[sourceId]
+                val destination = vertices[destinationId]
+                if (source != null && destination != null) {
+                    this.addVertexConnection(source, destination)
+                }
+            }
+        }
+
         updateDynamics();
         return vertices.remove(vertexToRemove.id)
     }
@@ -96,7 +120,7 @@ class Graph(
         fetchedDestinationVertex.id.let { fetchedSourceVertex.connections.add(it) }
         vertices[sourceVertexUUID] = fetchedSourceVertex;
 
-        if (!directional) {
+        if (directional) {
             return fetchedSourceVertex
         }
 
@@ -141,7 +165,7 @@ class Graph(
         fetchedSourceVertex.connections.remove(fetchedDestinationVertex.id)
         vertices[sourceVertexUUID] = fetchedSourceVertex;
 
-        if (!directionalDelete) {
+        if (directionalDelete) {
             return fetchedSourceVertex
         }
 

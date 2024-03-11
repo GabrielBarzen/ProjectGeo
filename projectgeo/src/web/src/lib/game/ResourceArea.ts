@@ -1,11 +1,11 @@
 
 import { type Area, type Vertex, type Graph } from '../mapping/Graphs';
-import L, { LatLng, type LatLngExpression } from 'leaflet'
+import L, { LatLng } from 'leaflet'
 import { ResourceGraph } from './ResourceGraph';
 
 class ResourceArea {
 
-  resourceGraphs: ResourceGraph[] = []
+  resourceGraphs: Map<string, ResourceGraph> = new Map
   assignedMap: L.Map | undefined
   id: string
   constructor(area: Area,
@@ -14,9 +14,9 @@ class ResourceArea {
     renderClickLine: boolean = false) {
     this.id = area.id
     area.graphs.forEach(graph => {
-      var resourceGraph = new ResourceGraph(this, graph, primaryLineColor, clickLineColor, renderClickLine)
+      const resourceGraph = new ResourceGraph(this, graph, primaryLineColor, clickLineColor, renderClickLine)
 
-      this.resourceGraphs.push(resourceGraph)
+      this.resourceGraphs.set(resourceGraph.graph.id, resourceGraph)
     })
 
   }
@@ -34,9 +34,8 @@ class ResourceArea {
     draggable: boolean = true
   ) {
     this.resourceGraphs.forEach(graph => {
-      graph.addMarkers(draggable)
-      graph.setOnVertexDragFunction(onVertexDragFunction)
-      graph.setOnVertexClickFunction(onVertexClickFunction)
+      graph.addMarkers(draggable, onVertexClickFunction, onVertexDragFunction)
+
 
 
     });

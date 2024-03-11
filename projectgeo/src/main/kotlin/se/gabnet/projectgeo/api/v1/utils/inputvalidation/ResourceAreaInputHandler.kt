@@ -2,6 +2,8 @@ package se.gabnet.projectgeo.api.v1.utils.inputvalidation
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import se.gabnet.projectgeo.api.v1.utils.inputvalidation.AdminInputValidationHandling.AdminInputValidationException
+import se.gabnet.projectgeo.api.v1.utils.inputvalidation.AdminInputValidationHandling.ErrorResponse
 import se.gabnet.projectgeo.model.game.map.Graph
 import se.gabnet.projectgeo.model.game.map.ResourceArea
 import se.gabnet.projectgeo.model.game.map.persistence.GraphRepository
@@ -51,11 +53,6 @@ class ResourceAreaInputHandler(val resourceAreaRepository: ResourceAreaRepositor
     }
 
 
-    open class ErrorResponse(
-            val ERROR: String,
-            val httpStatus: HttpStatus
-    )
-
     class BadResourceAreaIdResponse(resourceAreaId: String) :
             ErrorResponse("Error parsing resource area id (Malformed id: $resourceAreaId)", HttpStatus.BAD_REQUEST)
 
@@ -73,6 +70,5 @@ class ResourceAreaInputHandler(val resourceAreaRepository: ResourceAreaRepositor
     class GraphNotFoundResponse(graphId: String) :
             ErrorResponse("Graph area not found in resource area (graph-id: $graphId)", HttpStatus.BAD_REQUEST)
 
-    class AdminInputValidationException(val response: ErrorResponse) : Throwable()
 
 }

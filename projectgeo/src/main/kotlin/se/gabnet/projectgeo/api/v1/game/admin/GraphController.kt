@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import se.gabnet.projectgeo.api.v1.utils.inputvalidation.AdminInputValidationHandling.AdminInputValidationException
+import se.gabnet.projectgeo.api.v1.utils.inputvalidation.GraphInputHandler
 import se.gabnet.projectgeo.api.v1.utils.inputvalidation.ResourceAreaInputHandler
 import se.gabnet.projectgeo.model.endpoints.AdminEndpoint
 import se.gabnet.projectgeo.model.game.map.Graph
@@ -38,7 +40,7 @@ class GraphController {
             resourceArea.createNewGraph()
             resourceAreaRepository.save(resourceArea)
             ResponseEntity(GsonUtil.repositoryGson.toJson(resourceArea), HttpStatus.OK)
-        } catch (graphInputValidationException: ResourceAreaInputHandler.AdminInputValidationException) {
+        } catch (graphInputValidationException: AdminInputValidationException) {
             resourceAreaInputHandler.resolveErrorResponse(graphInputValidationException)
         }
     }
@@ -80,7 +82,7 @@ class GraphController {
             resourceArea.graphs.remove(graph.id)
             val savedResourceArea = resourceAreaRepository.save(resourceArea)
             ResponseEntity(GsonUtil.repositoryGson.toJson(savedResourceArea), HttpStatus.OK)
-        } catch (graphInputValidationException: ResourceAreaInputHandler.AdminInputValidationException) {
+        } catch (graphInputValidationException: AdminInputValidationException) {
             resourceAreaInputHandler.resolveErrorResponse(graphInputValidationException)
         }
     }
@@ -112,6 +114,25 @@ class GraphController {
         graph.addVertexConnection(insertedVetex, destinationVertex)
         graphRepository.save(graph)
         return ResponseEntity(HttpStatus.OK)
+    }
+
+    @RequestMapping(
+            AdminEndpoint.GRAPH.ENDPOINT + "/parent",
+            method = [RequestMethod.GET],
+            produces = ["application/json"]
+    )
+    fun getParentFor(
+            @RequestParam(name = "graph-id") graphId: String,
+    ): ResponseEntity<String> {
+        val graphInputHandler = GraphInputHandler(graphRepository)
+        return try {
+            val graph = graphInputHandler.getGraph(graphId)
+            ResponseEntity(GsonUtil.gson.toJson(graph.area.id), HttpStatus.OK)
+
+        } catch (e: AdminInputValidationException) {
+            val response = e.response
+            ResponseEntity(response.ERROR, response.httpStatus)
+        }
     }
 
     data class UpdateGraphRequest(val sourceVertex: String?, val destinationVertex: String?, val y: Double?, val x: Double?)

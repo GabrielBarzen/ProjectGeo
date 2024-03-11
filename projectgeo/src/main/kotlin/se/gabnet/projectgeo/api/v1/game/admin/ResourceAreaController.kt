@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import se.gabnet.projectgeo.api.v1.utils.inputvalidation.AdminInputValidationHandling.AdminInputValidationException
 import se.gabnet.projectgeo.api.v1.utils.inputvalidation.ResourceAreaInputHandler
 import se.gabnet.projectgeo.model.endpoints.AdminEndpoint
 import se.gabnet.projectgeo.model.game.map.ResourceArea
@@ -43,11 +44,11 @@ class ResourceAreaController {
                 continue
             }
             if (previousVertex != null) {
-                vertex.addConnection(previousVertex)
+                graph.addVertexConnection(vertex, previousVertex)
                 previousVertex = vertex
             }
             if (createRequest.points.last() == point) {
-                vertex.addConnection(firstVertex)
+                graph.addVertexConnection(vertex, firstVertex)
             }
         }
         resourceAreaRepository.save(resourceArea)
@@ -78,7 +79,7 @@ class ResourceAreaController {
         return try {
             val resourceArea = resourceAreaInputHandler.getResourceArea(resourceAreaId)
             ResponseEntity(repositoryGson.toJson(resourceArea), HttpStatus.OK)
-        } catch (e: ResourceAreaInputHandler.AdminInputValidationException) {
+        } catch (e: AdminInputValidationException) {
             val response = e.response
             ResponseEntity(response.ERROR, response.httpStatus)
         }
@@ -94,7 +95,7 @@ class ResourceAreaController {
             val resourceArea = resourceAreaInputHandler.getResourceArea(resourceAreaId)
             resourceAreaRepository.deleteById(resourceArea.id)
             ResponseEntity(HttpStatus.OK)
-        } catch (e: ResourceAreaInputHandler.AdminInputValidationException) {
+        } catch (e: AdminInputValidationException) {
             val response = e.response
             ResponseEntity(response.ERROR, response.httpStatus)
         }
