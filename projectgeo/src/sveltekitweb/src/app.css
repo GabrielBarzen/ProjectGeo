@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+  html,
+  body {
+    margin: 0;
+    min-width: 320px;
+    @apply size-full
+  }
+  #app {
+    height: 100%;
+    width: 100%;
+  }
+  main {
+    height: 100%;
+    width: 100%;
+  }
+  .btn {
+    @apply pointer-events-auto text-white;
+  }
+  .btn-primary {
+    @apply btn bg-gray-600 w-full h-3/4 rounded;
+  }
+  .btn-secondary {
+    @apply btn bg-gray-800 h-8 w-full rounded
+  }
+  .btn-confirm {
+    @apply btn bg-green-600 h-8 w-1/2 rounded-l;
+  }
+  .btn-abort {
+    @apply btn bg-red-600 h-8 w-1/2 rounded-r;
+  }
+  .btn-confirm:hover {
+    @apply bg-green-700;
+  }
+  .btn-abort:hover {
+    @apply bg-red-700;
+  }
+  .btn-confirm:active {
+    @apply bg-green-800;
+  }
+  .btn-abort:active {
+    @apply bg-red-800;
+  }
+

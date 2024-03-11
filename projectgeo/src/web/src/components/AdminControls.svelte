@@ -1,19 +1,19 @@
 <script lang="ts">
-  import L, { CircleMarker, LatLng, latLng, type LatLngExpression } from "leaflet"
+  import L, { CircleMarker, LatLng } from "leaflet"
   import "leaflet/dist/leaflet.css"
   import { type Area, type Graph, type Vertex } from "../lib/mapping/Graphs"
   import ConfirmInput from "../ConfirmInput.svelte"
-  import ContextMenu, { Action } from "./ContextMenu.svelte"
+  import ChangeStateContextMenu, { Action } from "./ChangeStateContextMenu.svelte"
   import { onMount } from "svelte"
   import { ResourceArea } from "../lib/game/ResourceArea"
   import { Link } from "../lib/mapping/Link"
   import * as JSONParser from "../lib/json/Parser"
   import * as AdminInteface from "../lib/api/AdminInterface"
   import * as GeographyMath from "../lib/math/Geography"
+  import EditContextMenu from "./EditContextMenu.svelte"
 
   enum EditMode {
     None,
-    Delete,
     Edit,
     CreateResourceArea,
     CreateGraph,
@@ -30,7 +30,7 @@
 
   var createList: number[][]
   var markers: CircleMarker[]
-  var createMarkerList: L.Layer[] = []
+  var createMarkerList: L.CircleMarker[] = []
   var resourceAreas: ResourceArea[] = []
 
   export var map: L.Map | undefined
@@ -46,49 +46,6 @@
         currentEditModeState = EditModeState.None
       } else if (currentEditModeState == EditModeState.None)
         currentEditModeState = EditModeState.Action
-    }
-  }
-
-  async function createResourceArea() {
-    currentEditMode = EditMode.CreateGraph
-    currentEditModeState = EditModeState.Action
-    expandControls = false
-    createList = []
-    if (map) {
-      map.on("click", (e) => {
-        console.log("MAP CLICK")
-        var lat = e.latlng.lat
-        var lng = e.latlng.lng
-        var validated = true
-        createList.forEach((coordinate: number[]) => {
-          if (GeographyMath.getDistanceInKm(coordinate, [lat, lng]) < 0.05) {
-            createList = createList.filter((item) => item != coordinate)
-            validated = false
-          }
-        })
-        if (validated) {
-          createList.push([lat, lng])
-        }
-
-        if (markers) {
-          markers.forEach((marker) => map?.removeLayer(marker))
-        }
-        markers = []
-
-        createList.forEach((listItem) => {
-          var marker = L.circleMarker([listItem[0], listItem[1]])
-
-          markers.push(marker)
-        })
-        markers.forEach((marker) => map?.addLayer(marker))
-        markers.forEach((marker) => createMarkerList.push(marker))
-
-        if (createList.length > 2) {
-          currentEditModeState = EditModeState.Confirm
-        }
-
-        console.log(createList)
-      })
     }
   }
 
@@ -112,23 +69,7 @@
     if (map) {
       resourceArea.renderTo(map)
     }
-    resourceArea.setOnLineClickFunction((graph, pressedLink, position) => {
-      console.log("Clicked link: ")
-      console.log(pressedLink)
-      splitGraphLine(graph, pressedLink[0], pressedLink[1], position)
-    })
-    resourceArea.addMarkers(
-      (vertex: Vertex) => {
-        console.log("Clicked: ")
-        console.log(vertex)
-      },
-      (vertex: Vertex) => {
-        console.log("Dragged: ")
-        console.log(vertex)
-        updateVertexPosition(vertex)
-      },
-      true
-    )
+
     resourceAreas.push(resourceArea)
   }
 
@@ -151,6 +92,9 @@
     resourceAreas.forEach((area) => {
       area.clear()
     })
+    createModeLayers.forEach((layer) => {
+      map?.removeLayer(layer)
+    })
     clearLayers()
     if (map) {
       map.off("click")
@@ -161,24 +105,43 @@
   }
 
   function clearLayers() {
-    map?.eachLayer((layer) => {
-      map?.removeLayer(layer)
-    })
     createList = []
     createMarkerList = []
   }
 
-  async function handleActionMessage(event: any) {
-    var action = event.detail.action
-    console.log("ENTER MODE: " + action)
-    switch (action) {
-      case "Create":
-        break
-      case "Edit":
-        break
-    }
-    console.log("ENTER MODE END ")
+  var createModeLayers: L.Layer[] = []
+  function setCreateMode() {
+    currentEditMode = EditMode.CreateGraph
+    currentEditModeState = EditModeState.Action
+    map?.on("click", (event) => {
+      var createModeMarker = L.circleMarker(event.latlng)
+      createModeLayers.push(createModeMarker)
+      map?.addLayer(createModeMarker)
+      if (createModeLayers.length > 2) {
+        currentEditModeState = EditModeState.Confirm
+      }
+    })
   }
+
+  async function createGraph() {
+    var points: number[][] = createModeLayers.map((layer) => {
+      var createCircleMarker: L.CircleMarker = layer as CircleMarker
+      return [createCircleMarker.getLatLng().lat, createCircleMarker.getLatLng().lng]
+    })
+    createModeLayers = []
+    AdminInteface.createArea(points, "TempName")
+  }
+
+  function setCreateResourceAreaMode() {
+    currentEditMode = EditMode.CreateResourceArea
+    currentEditModeState = EditModeState.Confirm
+  }
+
+  function setEditMode() {
+    currentEditMode = EditMode.Edit
+    currentEditModeState = EditModeState.Action
+  }
+  function handleEditContextActionMessage(event: any) {}
 
   async function handleConfirmMessage(event: any) {
     var confirm = event.detail.confirmed
@@ -187,22 +150,37 @@
       switch (currentEditMode) {
         case EditMode.CreateGraph:
           console.log("MODE: " + confirm)
+          await createGraph()
+          setCreateResourceAreaMode()
           break
         case EditMode.CreateResourceArea:
           console.log("MODE: " + confirm)
+          currentEditMode = EditMode.None
+          currentEditModeState = EditModeState.None
+          clear()
           break
-        case EditMode.Delete:
+        case EditMode.Edit:
           console.log("MODE: " + confirm)
           break
         case EditMode.None:
           console.log("MODE: " + confirm)
           break
-        case EditMode.Edit:
-          console.log("MODE: " + confirm)
-          break
       }
     }
     console.log("CONFIRMED END ")
+  }
+  async function handleActionMessage(event: any) {
+    var action = event.detail.action
+    console.log("ENTER MODE: " + action)
+    switch (action) {
+      case "Create":
+        setCreateMode()
+        break
+      case "Edit":
+        setEditMode()
+        break
+    }
+    console.log("ENTER MODE END ")
   }
 </script>
 
@@ -211,16 +189,12 @@
   class="absolute size-full left-0 top-0 z-10 flex justify-center flex-row items-end pointer-events-none"
 >
   {#if currentEditMode == EditMode.None}
-    <div class="flex flex-col w-4/12 content-between animate">
+    <div class="flex flex-col w-4/12 content-between">
       {#if currentEditModeState == EditModeState.Action}
-        <ContextMenu on:dispatchAction={handleActionMessage}></ContextMenu>
+        <ChangeStateContextMenu on:dispatchAction={handleActionMessage}></ChangeStateContextMenu>
       {/if}
       <div class="h-2/12 w-full">
-        <button
-          class="pointer-events-auto p-1 btn-primary mb-4"
-          id="expand-button"
-          on:click={toggleExpand}
-        >
+        <button class="pointer-events-auto p-1 btn-primary mb-4" on:click={toggleExpand}>
           {#if !(currentEditModeState == EditModeState.Action)}
             +
           {:else}
@@ -230,14 +204,19 @@
       </div>
     </div>
   {:else}
+    {#if currentEditMode == EditMode.Edit}
+      <div class="flex flex-col w-4/12 content-between">
+        {#if currentEditModeState == EditModeState.Action}
+          <EditContextMenu on:dispatchAction={handleEditContextActionMessage}></EditContextMenu>
+        {/if}
+      </div>
+    {/if}
+
+    <!-- aaa -->
     <div class="flex flex-col w-4/12 content-between">
       {#if currentEditModeState == EditModeState.Action}
         <div class="h-2/12 w-full">
-          <button
-            class="pointer-events-auto p-1 btn-primary mb-4"
-            id="expand-button"
-            on:click={clear}
-          >
+          <button class="pointer-events-auto p-1 btn-primary mb-4" on:click={clear}>
             Cancel
           </button>
         </div>

@@ -2,6 +2,8 @@ package se.gabnet.projectgeo.api.v1.utils.inputvalidation
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import se.gabnet.projectgeo.api.v1.utils.inputvalidation.AdminInputValidationHandling.AdminInputValidationException
+import se.gabnet.projectgeo.api.v1.utils.inputvalidation.AdminInputValidationHandling.ErrorResponse
 import se.gabnet.projectgeo.model.game.map.Vertex
 import se.gabnet.projectgeo.model.game.map.persistence.VertexRepository
 import java.util.*
@@ -35,11 +37,6 @@ class VertexInputHandler(val vertexRepository: VertexRepository) {
     }
 
 
-    open class ErrorResponse(
-            val ERROR: String,
-            val httpStatus: HttpStatus
-    )
-
     class BadVertexIdResponse(resourceAreaId: String) :
             ErrorResponse("Error parsing resource area id (Malformed id: $resourceAreaId)", HttpStatus.BAD_REQUEST)
 
@@ -47,7 +44,8 @@ class VertexInputHandler(val vertexRepository: VertexRepository) {
     class VertexNotFoundResponse(resourceAreaId: String) :
             ErrorResponse("Resource area not found (id: $resourceAreaId)", HttpStatus.BAD_REQUEST)
 
+    class TooFewVertices() :
+            ErrorResponse("Graph cannot contain less than 3 vertices", HttpStatus.CONFLICT)
 
-    class AdminInputValidationException(val response: ErrorResponse) : Throwable()
 
 }
