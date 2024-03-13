@@ -21,11 +21,12 @@ class Graph(
         @MapKey(name = "id")
         @Expose
         var vertices: MutableMap<UUID, Vertex> = mutableMapOf()) {
-    @Expose
     var centerY: Double = 0.0
-
-    @Expose
     var centerX: Double = 0.0
+    var maxY: Double = 0.0
+    var maxX: Double = 0.0
+    var minY: Double = 0.0
+    var minX: Double = 0.0
 
     @Expose
     @Id
@@ -86,6 +87,29 @@ class Graph(
         val exAverage = GeographyUtil.coordinateAverage(vertices.values.stream().map { item -> Pair(item.y, item.x) }.toList())
         centerY = exAverage.first
         centerX = exAverage.second
+        relcalculateMinMax()
+
+    }
+
+    private fun relcalculateMinMax() {
+        maxX = Double.MIN_VALUE
+        maxY = Double.MIN_VALUE
+        minX = Double.MAX_VALUE
+        minY = Double.MAX_VALUE
+        for (vertex in vertices.values) {
+            if (vertex.x > maxX) {
+                maxX = vertex.x
+            }
+            if (vertex.y > maxY) {
+                maxY = vertex.y
+            }
+            if (vertex.x < minX) {
+                minX = vertex.x
+            }
+            if (vertex.y < minY) {
+                minY = vertex.y
+            }
+        }
     }
 
     fun addVertexConnection(

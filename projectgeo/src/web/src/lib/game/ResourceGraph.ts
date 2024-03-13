@@ -52,7 +52,11 @@ class ResourceGraph {
 
     const vertices = [firstVertex, secondVertex]
     const link: Link = new Link(vertices[0], vertices[1], this)
-    link.setClickLineStyle({ color: this.debugLineColor, weight: 24, opacity: 0.2 })
+    if (this.renderClickLine) {
+      link.setClickLineStyle({ color: this.debugLineColor, weight: 24, opacity: 0.2 })
+    } else {
+      link.setClickLineStyle({ color: this.debugLineColor, weight: 24, opacity: 0.0 })
+    }
     link.setDrawLineStyle({ color: this.primaryLineColor, weight: 6, opacity: 0.8 })
 
     const firstLinkEntry = this.links.get(firstVertex.id)

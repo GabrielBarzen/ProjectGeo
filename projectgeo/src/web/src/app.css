@@ -20,6 +20,9 @@
   .btn {
     @apply pointer-events-auto text-white;
   }
+  .btn-expand {
+    @apply btn top-6 left-6 h-12 w-12 absolute z-20 text-white bg-gray-600 rounded
+  }
   .btn-primary {
     @apply btn bg-gray-600 w-full h-3/4 rounded;
   }

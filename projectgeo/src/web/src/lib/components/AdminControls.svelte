@@ -9,6 +9,7 @@
 	import * as JSONParser from '$lib/json/Parser';
 	import * as AdminInteface from '$lib/api/AdminInterface';
 	import EditContextMenu from '$lib/components/EditContextMenu.svelte';
+	import { Action as EditAction } from '$lib/components/EditContextMenu.svelte';
 	import spinner90 from '$lib/assets/90-ring.svg';
 
 	export const ssr = false;
@@ -62,7 +63,12 @@
 	}
 
 	function renderArea(area: Area) {
-		var resourceArea: ResourceArea = new ResourceArea(area, '#00ff00', '#ff0000', true);
+		var color1 = '#' + Math.random().toString(16).substring(4);
+		color1 = color1.substring(0, 7);
+		var color2 = '#' + Math.random().toString(16).substring(4);
+
+		color2 = color2.substring(0, 7);
+		var resourceArea: ResourceArea = new ResourceArea(area, color1, color2);
 		if (map) {
 			resourceArea.renderTo(map);
 		}
@@ -70,7 +76,7 @@
 		resourceAreas.set(resourceArea.id, resourceArea);
 	}
 
-	function clear() {
+	async function clear() {
 		createdArea = undefined;
 		resourceAreas.forEach((area) => {
 			area.clear();
@@ -82,11 +88,11 @@
 		if (map) {
 			map.off('click');
 		}
-
+		editModeResourceAreaId = undefined;
 		currentEditMode = EditMode.None;
 		currentEditModeState = EditModeState.None;
 
-		renderAllAreas();
+		await renderAllAreas();
 	}
 
 	var createModeLayers: L.Layer[] = [];
@@ -121,9 +127,10 @@
 
 	function setEditMode() {
 		currentEditMode = EditMode.Edit;
-		currentEditModeState = EditModeState.Action;
+		currentEditModeState = EditModeState.None;
 		resourceAreas.forEach((resourceArea) => {
 			resourceArea.setOnLineClickFunction((graph, pressedLink, position) => {
+				currentEditModeState = EditModeState.Action;
 				setEditAreaMode(graph.id);
 			});
 		});
@@ -145,14 +152,17 @@
 		setEditAreaMode(graphId);
 	}
 
+	var editModeResourceAreaId: string | undefined;
 	async function setEditAreaMode(graphId: string) {
 		await renderAllAreas();
 		var idPromise = await AdminInteface.getGraphParentAreaId(graphId);
 		var data: string = await idPromise.json();
 		var resourceArea = resourceAreas.get(data);
 		if (resourceArea) {
+			editModeResourceAreaId = resourceArea.id;
 			if (map) {
 				resourceArea.clear();
+				resourceArea.setRenderDebugLine(true);
 				resourceArea.renderTo(map);
 			}
 
@@ -177,7 +187,24 @@
 	}
 
 	//** Button input management **//
-	function handleEditContextActionMessage(event: object) {}
+	var selectedEditAction: EditAction | undefined;
+	async function handleEditContextActionMessage(event: CustomEvent<EditAction>) {
+		selectedEditAction = event.detail;
+		switch (event.detail) {
+			case EditAction.Delete:
+				if (editModeResourceAreaId) {
+					currentEditModeState = EditModeState.Confirm;
+				}
+				break;
+			case EditAction.EditAreas:
+			case EditAction.ChangeName:
+				alert(event.detail.toString() + ': Not implemented');
+				break;
+		}
+		//if delete clear with editModeResourceAreaId
+		//if changename name, start name input
+		//if edit areas, open add resource prompt
+	}
 
 	async function handleConfirmMessage(event: CustomEvent<boolean>) {
 		var confirm = event.detail;
@@ -199,6 +226,19 @@
 					clear();
 					break;
 				case EditMode.Edit:
+					switch (selectedEditAction) {
+						case EditAction.Delete: {
+							if (confirm) {
+								await AdminInteface.deleteArea(editModeResourceAreaId!);
+								await clear();
+								setEditMode();
+								return;
+							}
+						}
+					}
+					await clear();
+					setEditMode();
+
 					break;
 				case EditMode.None:
 					break;
@@ -216,11 +256,26 @@
 				break;
 		}
 	}
+	var showResourceAreaList = false;
+	function toggleResourceAreaList() {
+		showResourceAreaList = !showResourceAreaList;
+	}
 </script>
+
+{#if showResourceAreaList}
+	<button class="btn-expand" on:click={toggleResourceAreaList}> - </button>
+	<div
+		id="resource-area-list"
+		class="absolute w-1/3 h-full left-0 top-0 z-10 flex justify-center flex-row items-end pointer-events-none bg-black"
+	></div>
+{:else}
+	<button class="btn-expand" on:click={toggleResourceAreaList}> + </button>
+{/if}
 
 <div
 	id="controls"
-	class="absolute size-full left-0 top-0 z-10 flex justify-center flex-row items-end pointer-events-none"
+	class:resourceAreaListEnabled={showResourceAreaList}
+	class:resourceAreaListDisabled={!showResourceAreaList}
 >
 	<!-- Mode Menus -->
 	<div class="w-4/12">
@@ -229,7 +284,11 @@
 				{#if currentEditMode == EditMode.None}
 					<ChangeStateContextMenu on:dispatchAction={handleActionMessage}></ChangeStateContextMenu>
 				{:else if currentEditMode == EditMode.Edit}
-					<EditContextMenu on:dispatchAction={handleEditContextActionMessage}></EditContextMenu>
+					<EditContextMenu on:action={handleEditContextActionMessage}></EditContextMenu>
+				{/if}
+			{:else if currentEditModeState == EditModeState.None}
+				{#if currentEditMode == EditMode.Edit}
+					<div class="w-full">Select Zone To Edit</div>
 				{/if}
 			{/if}
 		</div>
@@ -244,14 +303,14 @@
 					{/if}
 				</button>
 			{:else if currentEditModeState == EditModeState.Confirm}
-				{#if (currentEditMode == EditMode.Edit || currentEditMode == EditMode.CreateResourceArea || currentEditMode == EditMode.CreateGraph) && currentEditModeState == EditModeState.Confirm}
+				{#if currentEditMode == EditMode.Edit || currentEditMode == EditMode.CreateResourceArea || currentEditMode == EditMode.CreateGraph}
 					<ConfirmInput
 						on:confirm={(event) => {
 							handleConfirmMessage(event);
 						}}
 					></ConfirmInput>
 				{/if}
-			{:else if currentEditModeState == EditModeState.Action}
+			{:else if currentEditModeState == EditModeState.Action || (currentEditMode == EditMode.Edit && currentEditModeState == EditModeState.None)}
 				<button class="pointer-events-auto p-1 btn-primary mb-4" on:click={clear}> Cancel </button>
 			{:else if currentEditModeState == EditModeState.Wait}
 				<button class="pointer-events-none p-1 btn-primary mb-4">
@@ -263,4 +322,10 @@
 </div>
 
 <style lang="postcss">
+	.resourceAreaListEnabled {
+		@apply absolute h-full w-2/3 top-0 left-1/3 z-10 flex justify-center flex-row items-end pointer-events-none;
+	}
+	.resourceAreaListDisabled {
+		@apply absolute size-full top-0 left-0 z-10 flex justify-center flex-row items-end pointer-events-none;
+	}
 </style>

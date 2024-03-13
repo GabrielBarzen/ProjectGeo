@@ -26,6 +26,10 @@ class ResourceArea {
         resourceGraph.setOnLineClickFunction(onLineClickFunction)
       })
     }
+  } setRenderDebugLine(renderDebugLine: boolean) {
+    this.resourceGraphs.forEach((line) => {
+      line.renderClickLine = renderDebugLine
+    })
   }
 
   addMarkers(
