@@ -30,7 +30,6 @@ class Vertex(
 
     fun addConnection(vertexConnections: Vertex) {
         connections.add(vertexConnections.id)
-
     }
 
 }

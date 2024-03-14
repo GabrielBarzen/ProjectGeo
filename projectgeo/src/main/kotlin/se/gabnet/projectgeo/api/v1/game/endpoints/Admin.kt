@@ -1,6 +1,7 @@
-package se.gabnet.projectgeo.model.endpoints
+package se.gabnet.projectgeo.api.v1.game.endpoints
 
 sealed class AdminEndpoint {
+
     data object ADMIN_GAME_BASE : AdminEndpoint() {
         const val ENDPOINT = "/api/v1/game/admin"
     }

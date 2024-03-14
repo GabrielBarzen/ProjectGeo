@@ -4,10 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import se.gabnet.projectgeo.api.v1.game.endpoints.AdminEndpoint
 import se.gabnet.projectgeo.api.v1.utils.inputvalidation.AdminInputValidationHandling.AdminInputValidationException
 import se.gabnet.projectgeo.api.v1.utils.inputvalidation.GraphInputHandler
 import se.gabnet.projectgeo.api.v1.utils.inputvalidation.ResourceAreaInputHandler
-import se.gabnet.projectgeo.model.endpoints.AdminEndpoint
 import se.gabnet.projectgeo.model.game.map.Graph
 import se.gabnet.projectgeo.model.game.map.ResourceArea
 import se.gabnet.projectgeo.model.game.map.persistence.GraphRepository
