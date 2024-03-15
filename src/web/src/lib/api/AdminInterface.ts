@@ -56,7 +56,10 @@ export async function splitGraphLine(graph: Graph, source: Vertex, destination: 
   })
   const data = await fetch(url, {
     method: "PUT",
-    body: body
+    body: body,
+    headers: {
+      "Content-Type": "application/json",
+    },
   })
   return data
 }
@@ -75,9 +78,24 @@ export async function getGraphParentAreaId(graphId: string): Promise<Response> {
 
 
 
-export async function deleteVertex(id: string): Promise<Response> {
-  const data = await fetch(`${baseAdminUrl}vertex?vertex-id=${id}`, {
+export async function deleteVertex(vertexId: string): Promise<Response> {
+  const data = await fetch(`${baseAdminUrl}vertex?vertex-id=${vertexId}`, {
     method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+  return data
+}
+
+
+
+export async function updateAreaName(setName: string, areaId: string): Promise<Response> {
+  const url = `${baseAdminUrl}resource-area?resource-area-id=${areaId}`
+  const body = JSON.stringify({ name: setName })
+  const data = await fetch(url, {
+    method: "PUT",
+    body: body,
     headers: {
       "Content-Type": "application/json",
     },

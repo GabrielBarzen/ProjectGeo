@@ -1,6 +1,6 @@
 import { type Vertex, type Graph } from '../mapping/Graphs';
 import { Link } from '../mapping/Link'
-import L, { LatLng } from 'leaflet'
+import L, { LatLng, map, type LatLngExpression } from 'leaflet'
 import { VertexMarker } from '../mapping/VertexMarker';
 import type { ResourceArea } from './ResourceArea';
 
@@ -13,6 +13,7 @@ class ResourceGraph {
   renderClickLine: boolean
   graph: Graph
   assignedMap: L.Map | undefined
+  textBox: L.marker | undefined
 
   parentArea: ResourceArea
   constructor(
@@ -125,9 +126,16 @@ class ResourceGraph {
     this.createLinks()
     this.assignedMap = map;
 
+
     if (this.assignedMap == undefined) {
       return
     }
+    const textIcon = L.divIcon({
+      className: "resource-area-graph-text", html:
+        `<b>${this.parentArea.name}</b>`
+    })
+    this.textBox = L.marker([this.graph.centerY, this.graph.centerX], { icon: textIcon })
+    this.textBox.addTo(map)
 
     this.links.forEach(layerValue => {
       const linkEntry: Link[] = layerValue[1]
@@ -154,6 +162,8 @@ class ResourceGraph {
       const marker: VertexMarker = layerValue[1]
       marker.clear()
     })
+
+    this.assignedMap?.removeLayer(this.textBox)
 
   }
 }

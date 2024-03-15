@@ -24,11 +24,33 @@ class ResourceAreaController {
 
     @RequestMapping(
             AdminEndpoint.RESOURCE_AREA.ENDPOINT,
-            method = [RequestMethod.POST],
+            method = [RequestMethod.PUT],
             produces = ["application/json"],
             consumes = ["application/json"]
     )
-    fun createArea(@RequestBody body: String): ResponseEntity<String> {
+    fun updateResourceArea(@RequestBody resourceAreaRequest: UpdateRequest, @RequestParam(name = "resource-area-id") resourceAreaId: String): ResponseEntity<String> {
+        val resourceAreaInputHandler = ResourceAreaInputHandler(resourceAreaRepository);
+        return try {
+            val resourceArea = resourceAreaInputHandler.getResourceArea(resourceAreaId)
+            if (resourceAreaRequest.name == null) {
+                return ResponseEntity(HttpStatus.BAD_REQUEST)
+            }
+            resourceArea.name = resourceAreaRequest.name
+            resourceAreaRepository.save(resourceArea)
+            ResponseEntity(repositoryGson.toJson(resourceArea), HttpStatus.OK)
+        } catch (e: AdminInputValidationException) {
+            val response = e.response
+            ResponseEntity(response.ERROR, response.httpStatus)
+        }
+    }
+
+    @RequestMapping(
+        AdminEndpoint.RESOURCE_AREA.ENDPOINT,
+        method = [RequestMethod.POST],
+        produces = ["application/json"],
+        consumes = ["application/json"]
+    )
+    fun createResourceArea(@RequestBody body: String): ResponseEntity<String> {
 
         val createRequest: CreateRequest = gson.fromJson(body, CreateRequest::class.java)
         val resourceArea = ResourceArea(createRequest.name)
@@ -65,7 +87,6 @@ class ResourceAreaController {
         } else {
             getAllAreas()
         }
-
     }
 
     private fun getAllAreas(): ResponseEntity<String> {
@@ -103,4 +124,5 @@ class ResourceAreaController {
 
     data class CreateRequest(val points: List<List<Double>>, val name: String)
 
+    data class UpdateRequest(val name: String?)
 }

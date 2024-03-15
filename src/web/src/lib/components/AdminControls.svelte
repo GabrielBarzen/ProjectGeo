@@ -91,6 +91,9 @@
 		editModeResourceAreaId = undefined;
 		currentEditMode = EditMode.None;
 		currentEditModeState = EditModeState.None;
+		selectedEditAction = undefined;
+		setName = '';
+		displayNameInput = false;
 
 		await renderAllAreas();
 	}
@@ -129,7 +132,7 @@
 		currentEditMode = EditMode.Edit;
 		currentEditModeState = EditModeState.None;
 		resourceAreas.forEach((resourceArea) => {
-			resourceArea.setOnLineClickFunction((graph, pressedLink, position) => {
+			resourceArea.setOnLineClickFunction((graph) => {
 				currentEditModeState = EditModeState.Action;
 				setEditAreaMode(graph.id);
 			});
@@ -159,6 +162,7 @@
 		var data: string = await idPromise.json();
 		var resourceArea = resourceAreas.get(data);
 		if (resourceArea) {
+			setName = resourceArea.name;
 			editModeResourceAreaId = resourceArea.id;
 			if (map) {
 				resourceArea.clear();
@@ -186,6 +190,8 @@
 		}
 	}
 
+	var setName = '';
+	var displayNameInput = false;
 	//** Button input management **//
 	var selectedEditAction: EditAction | undefined;
 	async function handleEditContextActionMessage(event: CustomEvent<EditAction>) {
@@ -196,8 +202,13 @@
 					currentEditModeState = EditModeState.Confirm;
 				}
 				break;
-			case EditAction.EditAreas:
 			case EditAction.ChangeName:
+				selectedEditAction = EditAction.ChangeName;
+				currentEditModeState = EditModeState.Confirm;
+				displayNameInput = true;
+
+				break;
+			case EditAction.EditAreas:
 				alert(event.detail.toString() + ': Not implemented');
 				break;
 		}
@@ -226,23 +237,45 @@
 					clear();
 					break;
 				case EditMode.Edit:
-					switch (selectedEditAction) {
-						case EditAction.Delete: {
-							if (confirm) {
-								await AdminInteface.deleteArea(editModeResourceAreaId!);
-								await clear();
-								setEditMode();
-								return;
-							}
-						}
-					}
-					await clear();
-					setEditMode();
-
+					await handleEditModeConfirm(confirm);
 					break;
 				case EditMode.None:
 					break;
 			}
+		}
+	}
+
+	async function handleEditModeConfirm(confirm: boolean) {
+		switch (selectedEditAction) {
+			case EditAction.Delete: {
+				if (confirm) {
+					await AdminInteface.deleteArea(editModeResourceAreaId!);
+					await clear();
+					setEditMode();
+					return;
+				}
+				break;
+			}
+			case EditAction.ChangeName:
+				if (confirm) {
+					if (setName.length < 2) {
+						alert('Area name must be 3 or above');
+					} else {
+						if (!editModeResourceAreaId) {
+							alert('Something went wrong when reading resource area id, please try again');
+							return;
+						}
+						await AdminInteface.updateAreaName(setName, editModeResourceAreaId);
+						await clear();
+						setEditMode();
+						return;
+					}
+				} else {
+					await clear();
+					setEditMode();
+					return;
+				}
+				break;
 		}
 	}
 	async function handleActionMessage(event: object) {
@@ -279,7 +312,23 @@
 >
 	<!-- Mode Menus -->
 	<div class="w-4/12">
-		<div class="w-full">
+		<div class="w-full flex content justify-between">
+			{#if displayNameInput}
+				<div class="w-10/12 m-auto bg-zinc-700 opacity-60 h-[60px] rounded flex">
+					<div class="relative w-10/12 h-10/12 m-auto min-w-[200px]">
+						<input
+							class="peer pointer-events-auto w-full h-full bg-transparent text-blue-gray-700 font-sans font-normal outline outline-0 focus:outline-0 disabled:bg-blue-gray-50 disabled:border-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 border focus:border-2 border-t-transparent focus:border-t-transparent text-sm px-3 py-2.5 rounded border-blue-gray-200 focus:border-gray-900"
+							placeholder=" "
+							id="area-text-input"
+							bind:value={setName}
+						/><label
+							class="flex w-full h-full select-none pointer-events-none absolute left-0 font-normal !overflow-visible truncate peer-placeholder-shown:text-blue-gray-500 leading-tight peer-focus:leading-tight peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500 transition-all -top-1.5 peer-placeholder-shown:text-sm text-[11px] peer-focus:text-[11px] before:content[' '] before:block before:box-border before:w-2.5 before:h-1.5 before:mt-[6.5px] before:mr-1 peer-placeholder-shown:before:border-transparent before:rounded-tl-md before:border-t peer-focus:before:border-t-2 before:border-l peer-focus:before:border-l-2 before:pointer-events-none before:transition-all peer-disabled:before:border-transparent after:content[' '] after:block after:flex-grow after:box-border after:w-2.5 after:h-1.5 after:mt-[6.5px] after:ml-1 peer-placeholder-shown:after:border-transparent after:rounded-tr-md after:border-t peer-focus:after:border-t-2 after:border-r peer-focus:after:border-r-2 after:pointer-events-none after:transition-all peer-disabled:after:border-transparent peer-placeholder-shown:leading-[3.75] text-gray-500 peer-focus:text-gray-900 before:border-blue-gray-200 peer-focus:before:!border-gray-900 after:border-blue-gray-200 peer-focus:after:!border-gray-900"
+							for="area-text-input"
+							>Area Name
+						</label>
+					</div>
+				</div>
+			{/if}
 			{#if currentEditModeState == EditModeState.Action}
 				{#if currentEditMode == EditMode.None}
 					<ChangeStateContextMenu on:dispatchAction={handleActionMessage}></ChangeStateContextMenu>

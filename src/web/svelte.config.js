@@ -15,7 +15,7 @@ const config = {
       {
         fallback: "index.html",
 
-        pages: "../../../projectgeo/build/resources/main/static/",
+        pages: "../../build/resources/main/static",
       }
     ),
     // prerender: { default: true }

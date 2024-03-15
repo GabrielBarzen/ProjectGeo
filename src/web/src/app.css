@@ -47,4 +47,24 @@
   .btn-abort:active {
     @apply bg-red-800;
   }
+.resource-area-graph-text {
+  /* @apply text-sm absolute w-2/12 h-4 translate-y-1/2 translate-x-1/2 */
+    /* position: absolute; */
+    /* width:50; */
+    /* font-size:20px; */
+}
+#map .leaflet-div-icon {
+  width:0;
+  height:0;
+  border: 0;
+  padding: 0;
+}
 
+#map .leaflet-div-icon b {
+  display:inline-block;
+  padding: 3px;
+  border: 1px solid #666;
+  border-radius: 3px;
+  background:#fff;
+  transform:translate(-50%, -50%);
+}

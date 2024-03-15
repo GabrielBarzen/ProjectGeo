@@ -2,7 +2,7 @@
 	import { onMount, onDestroy, createEventDispatcher, tick } from 'svelte';
 	import L from 'leaflet';
 	import 'leaflet/dist/leaflet.css';
-	import AdminControls from '$lib/components/AdminControls.svelte';
+	import UserControls from './UserControls.svelte';
 
 	export let view: L.LatLngExpression = [56.04673, 12.69437];
 	export let zoom: number = 14;
@@ -37,10 +37,14 @@
 	});
 	$: if (map) {
 		map.setView(view, zoom);
+		mapLoaded = true;
 	}
+	var mapLoaded = false;
 </script>
 
 <div id="map-container" class="relative size-full">
-	<AdminControls bind:map></AdminControls>
+	{#if mapLoaded}
+		<UserControls bind:map></UserControls>
+	{/if}
 	<div id="map" bind:this={mapElement} class="absolute left-0 top-0 size-full z-0"></div>
 </div>

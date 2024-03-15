@@ -1,0 +1,18 @@
+meta {
+  name: User
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/game/user/location
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "y": "56.0",
+    "x": "12.0"
+  }
+}

@@ -8,10 +8,12 @@ class ResourceArea {
   resourceGraphs: Map<string, ResourceGraph> = new Map
   assignedMap: L.Map | undefined
   id: string
+  name: string
   constructor(area: Area,
     primaryLineColor: string = "#555555",
     clickLineColor: string = "#111111",
     renderClickLine: boolean = false) {
+    this.name = area.name
     this.id = area.id
     area.graphs.forEach(graph => {
       const resourceGraph = new ResourceGraph(this, graph, primaryLineColor, clickLineColor, renderClickLine)

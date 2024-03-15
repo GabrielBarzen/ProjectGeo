@@ -37,6 +37,8 @@ class VertexController {
             val updateVertexRequest = gson.fromJson(vertexUpdateBody, UpdateVertexRequest::class.java)
             vertex.y = updateVertexRequest.y
             vertex.x = updateVertexRequest.x
+            val graph = vertex.graph;
+            graph.updateDynamics()
             vertexRepository.save(vertex)
             ResponseEntity(HttpStatus.OK)
         } catch (e: AdminInputValidationException) {

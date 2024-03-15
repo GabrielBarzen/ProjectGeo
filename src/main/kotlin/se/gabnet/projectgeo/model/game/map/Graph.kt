@@ -23,9 +23,11 @@ class Graph(
         @Expose
         var vertices: MutableMap<UUID, Vertex> = mutableMapOf()) {
 
+    @Expose
     @ColumnDefault(value = "0.0")
     var centerY: Double = 0.0
 
+    @Expose
     @ColumnDefault(value = "0.0")
     var centerX: Double = 0.0
 
@@ -40,6 +42,9 @@ class Graph(
 
     @ColumnDefault(value = "0.0")
     var minX: Double = 0.0
+
+    @ColumnDefault(value = Double.MIN_VALUE.toString())
+    var maxDistance: Double = Double.MIN_VALUE
 
     @Expose
     @Id
@@ -63,6 +68,7 @@ class Graph(
         updateDynamics()
         return vertex
     }
+
 
     fun removeVertex(vertexToRemove: Vertex): Vertex? {
         if (this.vertices.size <= 3) {
@@ -190,7 +196,7 @@ class Graph(
         return sortedVertices
     }
 
-    private fun updateDynamics() {
+    fun updateDynamics() {
         val exAverage = GeographyUtil.coordinateAverage(vertices.values.stream().map { item -> Pair(item.y, item.x) }.toList())
         centerY = exAverage.first
         centerX = exAverage.second
@@ -214,6 +220,10 @@ class Graph(
             }
             if (vertex.y < minY) {
                 minY = vertex.y
+            }
+            val distanceToCenter = GeographyUtil.distanceBetweenInKm(centerY,centerX,vertex)
+            if (distanceToCenter> maxDistance) {
+                maxDistance = distanceToCenter
             }
         }
     }
