@@ -5,9 +5,50 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e70b4d72-178b-45b9-ab91-1763e6c1fa9a" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/admin/AreaController.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/admin/AreaDefinitionController.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/admin/GraphController.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/admin/VertexController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/datahandler/DataValidationThrowableDefinition.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/map/placeable/Placeable.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/map/placeable/PlaceableDefinition.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/map/placeable/Resource.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/map/placeable/persistence/AreaDefinitionRepository.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/map/placeable/persistence/AreaRepository.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/map/world/Area.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/map/world/AreaDefinition.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/placeable/Material.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/placeable/Material.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/placeable/Quality.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/debug/GraphDebugController.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/debug/MaterialDebugController.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/debug/QualityDebugController.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/debug/ResourceAreaDebugController.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/debug/ResourceDebugController.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/debug/VertexDebugController.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/game/admin/GraphController.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/game/admin/ResourceAreaController.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/game/admin/VertexController.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/game/endpoints/Admin.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/endpoints/Admin.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/game/endpoints/User.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/endpoints/User.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/game/player/LocationController.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/utils/inputvalidation/AdminInputValidationHandling.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/utils/inputvalidation/GraphInputHandler.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/datahandler/GraphInputHandler.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/utils/inputvalidation/ResourceAreaInputHandler.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/utils/inputvalidation/VertexInputHandler.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/datahandler/VertexInputHandler.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/map/Area.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/map/Graph.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/map/world/Graph.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/map/ResourceArea.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/map/Vertex.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/map/world/Vertex.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/map/persistence/GraphRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/map/placeable/persistence/GraphRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/map/persistence/ResourceAreaRepository.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/map/persistence/VertexRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/map/placeable/persistence/VertexRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/placeable/Material.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/placeable/Resource.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/placeable/Yield.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/placeable/persistence/MaterialRepository.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/placeable/persistence/QualityRepository.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/placeable/persistence/ResourceRepository.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/placeable/persistence/YieldRepository.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/util/GeographyUtil.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/map/util/GeographyUtil.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -66,6 +107,15 @@
       </state>
     </system>
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Kotlin File" />
+        <option value="Kotlin Class" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -81,23 +131,47 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Gradle.Build ProjectGeo.executor": "Run",
-    "Gradle.ProjectGeo [bootBuildImage].executor": "Run",
-    "Gradle.ProjectGeo [bootJar].executor": "Run",
-    "Gradle.ProjectGeo [bootRun].executor": "Debug",
-    "Gradle.ProjectGeo [bootTestRun].executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
-    "kotlin-language-version-configured": "true",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "preferences.lookFeel"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Gradle.Build ProjectGeo.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.ProjectGeo [bootBuildImage].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.ProjectGeo [bootJar].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.ProjectGeo [bootRun].executor&quot;: &quot;Debug&quot;,
+    &quot;Gradle.ProjectGeo [bootTestRun].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/gabrielmb/Documents/Projects/ProjectGeo/src/main/kotlin/se/gabnet/projectgeo/api/v1&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;
   }
-}]]></component>
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1" />
+      <recent name="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/map/world/placeable/persistence" />
+      <recent name="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/datavalidation" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/map/world" />
+      <recent name="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/map" />
+    </key>
+    <key name="CreateKotlinClassDialog.RecentsKey">
+      <recent name="se.gabnet.projectgeo.model.game.map.world" />
+    </key>
+    <key name="MoveKotlinTopLevelDeclarationsDialog.RECENTS_KEY">
+      <recent name="se.gabnet.projectgeo.model.game.map.placeable" />
+      <recent name="se.gabnet.projectgeo.model.game.map.util" />
+      <recent name="se.gabnet.projectgeo.model.game.map.world" />
+    </key>
+    <key name="CopyKotlinDeclarationDialog.RECENTS_KEY">
+      <recent name="se.gabnet.projectgeo.model.game.map.placeable.persistence" />
+      <recent name="se.gabnet.projectgeo.api.v1.datavalidation" />
+    </key>
+  </component>
   <component name="RunManager" selected="Gradle.ProjectGeo [bootRun]">
     <configuration name="ProjectGeo [bootBuildImage]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
@@ -211,23 +285,23 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/game/admin/VertexController.kt</url>
+          <url>file://$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v0/game/admin/VertexController.kt</url>
           <line>39</line>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/game/admin/ResourceAreaController.kt</url>
+          <url>file://$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v0/game/admin/ResourceAreaController.kt</url>
           <line>31</line>
           <option name="timeStamp" value="6" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/game/player/LocationController.kt</url>
-          <line>58</line>
+          <url>file://$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v0/game/player/LocationController.kt</url>
+          <line>57</line>
           <option name="timeStamp" value="9" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/game/player/LocationController.kt</url>
-          <line>44</line>
+          <url>file://$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v0/game/player/LocationController.kt</url>
+          <line>43</line>
           <option name="timeStamp" value="10" />
         </line-breakpoint>
       </breakpoints>

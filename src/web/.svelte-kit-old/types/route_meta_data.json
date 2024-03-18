@@ -1,0 +1,12 @@
+{
+	"/": [
+		"src/routes/+layout.js",
+		"src/routes/+layout.js"
+	],
+	"/admin": [
+		"src/routes/+layout.js"
+	],
+	"/user": [
+		"src/routes/+layout.js"
+	]
+}

@@ -1,0 +1,104 @@
+{
+  ".svelte-kit/generated/server/internal.js": {
+    "file": "internal.js",
+    "src": ".svelte-kit/generated/server/internal.js",
+    "isEntry": true,
+    "imports": [
+      "_internal.js"
+    ]
+  },
+  "_AdminControls.svelte_svelte_type_style_lang.js": {
+    "file": "chunks/AdminControls.svelte_svelte_type_style_lang.js",
+    "css": [
+      "_app/immutable/assets/AdminControls.BCfQk0ca.css"
+    ]
+  },
+  "_app.js": {
+    "file": "_app/immutable/assets/app.Bf0qldof.css",
+    "src": "_app.js"
+  },
+  "_exports.js": {
+    "file": "chunks/exports.js"
+  },
+  "_hooks.js": {
+    "file": "chunks/hooks.js",
+    "isDynamicEntry": true
+  },
+  "_internal.js": {
+    "file": "chunks/internal.js",
+    "imports": [
+      "_hooks.js"
+    ],
+    "dynamicImports": [
+      "_hooks.js"
+    ]
+  },
+  "node_modules/@sveltejs/kit/src/runtime/components/error.svelte": {
+    "file": "entries/fallbacks/error.svelte.js",
+    "src": "node_modules/@sveltejs/kit/src/runtime/components/error.svelte",
+    "isEntry": true,
+    "imports": [
+      "_hooks.js",
+      "_exports.js"
+    ]
+  },
+  "node_modules/@sveltejs/kit/src/runtime/components/layout.svelte": {
+    "file": "entries/fallbacks/layout.svelte.js",
+    "src": "node_modules/@sveltejs/kit/src/runtime/components/layout.svelte",
+    "isEntry": true,
+    "imports": [
+      "_hooks.js"
+    ]
+  },
+  "node_modules/@sveltejs/kit/src/runtime/server/index.js": {
+    "file": "index.js",
+    "src": "node_modules/@sveltejs/kit/src/runtime/server/index.js",
+    "isEntry": true,
+    "imports": [
+      "_internal.js",
+      "_exports.js",
+      "_hooks.js"
+    ]
+  },
+  "src/routes/+layout.js": {
+    "file": "entries/pages/_layout.js",
+    "src": "src/routes/+layout.js",
+    "isEntry": true
+  },
+  "src/routes/+page.svelte": {
+    "file": "entries/pages/_page.svelte.js",
+    "src": "src/routes/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_hooks.js"
+    ],
+    "css": [
+      "_app/immutable/assets/app.Bf0qldof.css"
+    ]
+  },
+  "src/routes/admin/+page.svelte": {
+    "file": "entries/pages/admin/_page.svelte.js",
+    "src": "src/routes/admin/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_hooks.js",
+      "_AdminControls.svelte_svelte_type_style_lang.js"
+    ],
+    "css": [
+      "_app/immutable/assets/app.Bf0qldof.css"
+    ]
+  },
+  "src/routes/user/+page.svelte": {
+    "file": "entries/pages/user/_page.svelte.js",
+    "src": "src/routes/user/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_hooks.js",
+      "_AdminControls.svelte_svelte_type_style_lang.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.1s2wfGth.css",
+      "_app/immutable/assets/app.Bf0qldof.css"
+    ]
+  }
+}

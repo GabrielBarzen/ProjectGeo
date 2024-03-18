@@ -17,6 +17,27 @@
     height: 100%;
     width: 100%;
   }
+.resource-area-graph-text {
+  /* @apply text-sm absolute w-2/12 h-4 translate-y-1/2 translate-x-1/2 */
+    /* position: absolute; */
+    /* width:50; */
+    /* font-size:20px; */
+}
+#map .leaflet-div-icon {
+  width:0;
+  height:0;
+  border: 0;
+  padding: 0;
+}
+
+#map .leaflet-div-icon b {
+  display:inline-block;
+  padding: 3px;
+  border: 1px solid #666;
+  border-radius: 3px;
+  background:#fff;
+  transform:translate(-50%, -50%);
+}
   .btn {
     @apply pointer-events-auto text-white;
   }
@@ -24,7 +45,7 @@
     @apply btn top-6 left-6 h-12 w-12 absolute z-20 text-white bg-gray-600 rounded
   }
   .btn-primary {
-    @apply btn bg-gray-600 w-full h-3/4 rounded;
+    @apply btn bg-gray-600 w-full h-12 rounded;
   }
   .btn-secondary {
     @apply btn bg-gray-800 h-8 w-full rounded
@@ -47,24 +68,5 @@
   .btn-abort:active {
     @apply bg-red-800;
   }
-.resource-area-graph-text {
-  /* @apply text-sm absolute w-2/12 h-4 translate-y-1/2 translate-x-1/2 */
-    /* position: absolute; */
-    /* width:50; */
-    /* font-size:20px; */
-}
-#map .leaflet-div-icon {
-  width:0;
-  height:0;
-  border: 0;
-  padding: 0;
-}
 
-#map .leaflet-div-icon b {
-  display:inline-block;
-  padding: 3px;
-  border: 1px solid #666;
-  border-radius: 3px;
-  background:#fff;
-  transform:translate(-50%, -50%);
-}
+

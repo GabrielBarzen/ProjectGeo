@@ -5,7 +5,7 @@
 	import * as UserLocationInterface from '$lib/api/UserLocationInterface';
 	import { parseAreaJSONList } from '$lib/json/Parser';
 	import { ResourceArea } from '$lib/game/ResourceArea';
-	import Map from './Map.svelte';
+	// import Map from './Map.svelte';
 	export var map: L.Map | undefined;
 
 	onMount(() => {
