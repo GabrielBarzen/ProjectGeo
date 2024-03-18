@@ -13,9 +13,6 @@ class Material(
 
         @Expose var name: String,
 
-        @OneToMany(orphanRemoval = true, cascade = [CascadeType.ALL], fetch = FetchType.LAZY) //TODO: Many to many, share quality between resources (ex. junk, horrible, poor, average, good, great, exceptional, perfect)
-        var quality: MutableList<Quality>,
-
         @OneToMany(orphanRemoval = true, cascade = [CascadeType.ALL], fetch = FetchType.LAZY) //TODO: Many to many, share yield between resources (ex. frequent, common, infrequent, rare)
         var yield: MutableList<Yield>,
 
