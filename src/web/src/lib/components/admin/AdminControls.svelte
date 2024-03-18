@@ -38,7 +38,6 @@
 					Return
 				{:else if !expanded}+{:else}-{/if}
 			</button>
-
 			{#if expanded}
 				{#if currentControl == Types.Control.Edit}
 					<EditControl></EditControl>
