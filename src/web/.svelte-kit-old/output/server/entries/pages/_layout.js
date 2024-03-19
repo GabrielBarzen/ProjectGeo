@@ -1,7 +1,0 @@
-const ssr = false;
-const prerender = true;
-export {
-  prerender,
-  ssr
-};
-//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiX2xheW91dC5qcyIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vc3JjL3JvdXRlcy8rbGF5b3V0LmpzIl0sInNvdXJjZXNDb250ZW50IjpbImV4cG9ydCBjb25zdCBzc3IgPSBmYWxzZTtcbmV4cG9ydCBjb25zdCBwcmVyZW5kZXIgPSB0cnVlO1xuIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFZLE1BQUMsTUFBTTtBQUNQLE1BQUMsWUFBWTsifQ==
