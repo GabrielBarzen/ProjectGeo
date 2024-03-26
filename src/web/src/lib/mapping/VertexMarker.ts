@@ -1,103 +1,128 @@
-
-import L from "leaflet"
-import type { Vertex } from "./Graphs"
-import type { ResourceGraph } from "../game/ResourceGraph"
-import type { Link } from "./Link"
+import L, { LatLng } from 'leaflet';
+import type { Vertex } from './Graphs';
+import type { Link } from './Link';
 class VertexMarker extends L.Circle {
-  dragged = false
-  parentGraph: ResourceGraph
-  vertex: Vertex
-  onMobile = (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
-  assignedMap: L.Map | undefined
-  clickedFunction: (vertex: Vertex) => void = () => {
-    console.log("No click function defined ");
-  }
-  draggedFunction: (vertex: Vertex) => void = () => {
-    console.log("No drag function defined ");
-  }
-  connectedLinks: Link[]
+	dragged = false;
 
-  constructor(parent: ResourceGraph, vertex: Vertex, latLng: L.LatLngExpression, connectedLinks: Link[]) {
-    super(latLng)
-    this.parentGraph = parent
-    this.vertex = vertex
-    this.setRadius(25)
-    this.setClickDragBehaviour()
-    this.connectedLinks = connectedLinks
-  }
+	vertexId: string;
+	onMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+		navigator.userAgent
+	);
+	assignedMap: L.Map | undefined;
+	private _clickable = false;
+	public get clickable() {
+		return this._clickable;
+	}
+	public set clickable(value) {
+		this._clickable = value;
+	}
+	private _draggable = false;
+	public get draggable() {
+		return this._draggable;
+	}
+	public set draggable(value) {
+		this._draggable = value;
+	}
+	clickedFunction: ((vertex: VertexMarker) => void) | undefined;
+	draggedFunction: ((vertex: VertexMarker) => void) | undefined;
 
-  setClickDragBehaviour() {
-    if (this.onMobile) {
-      this.setClickDragBehaviourTouch()
-      return
-    }
-    this.on("mousedown", () => {
-      this.assignedMap?.dragging.disable()
-      this.setDragged(false)
-      this.assignedMap?.on("mousemove", (mapMouseMoveEvent) => {
-        this.setDragged(true)
-        this.setLatLng(mapMouseMoveEvent.latlng)
-        this.vertex.y = mapMouseMoveEvent.latlng.lat
-        this.vertex.x = mapMouseMoveEvent.latlng.lng
-        this.updateLinkPosition()
-      })
-      this.on("mouseup", () => {
-        this.removeEventListener("mousedown")
-        this.removeEventListener("mousemove")
-        this.removeEventListener("mouseup")
-        this.assignedMap?.removeEventListener("mousemove")
-        this.assignedMap?.dragging.enable()
-        this.executeInteractFunction()
-        this.dragged = false
-      })
-    })
-  }
+	connectedLinks: Link[];
 
-  executeInteractFunction() {
-    if (!this.dragged) {
-      console.log("Clicked");
+	constructor(vertex: Vertex, connectedLinks: Link[]) {
+		super(new LatLng(vertex.y, vertex.x));
+		this.vertexId = vertex.id;
+		this.setRadius(25);
 
-      this.clickedFunction(this.vertex)
-    } else {
-      console.log("Dragged");
-      this.draggedFunction(this.vertex)
-    }
-  }
+		this.connectedLinks = connectedLinks;
+	}
 
-  setClickDragBehaviourTouch() {
+	setClickDragBehaviour(
+		onClickFunction?: (vertex: VertexMarker) => void,
+		onDragFunction?: (vertex: VertexMarker) => void
+	) {
+		this.clickedFunction = onClickFunction;
+		this.draggedFunction = onDragFunction;
 
-  }
+		if (this.onMobile) {
+			this.setClickDragBehaviourTouch();
+			return;
+		}
 
+		if (!this._clickable && !this._draggable) {
+			return;
+		}
+		this.on('click', (e) => {
+			L.DomEvent.stop(e);
+		});
+		this.on('mousedown', (e) => {
+			L.DomEvent.stop(e);
+			this.assignedMap?.dragging.disable();
+			this.setDragged(false);
+			if (this._draggable) {
+				this.assignedMap?.on('mousemove', (mapMouseMoveEvent) => {
+					this.setDragged(true);
+					this.setLatLng(mapMouseMoveEvent.latlng);
+					this.updateLinkPosition();
+				});
+			}
+			this.on('mouseup', () => {
+				this.removeEventListener('mousedown');
+				this.removeEventListener('mousemove');
+				this.removeEventListener('mouseup');
+				this.assignedMap?.removeEventListener('mousemove');
+				this.assignedMap?.dragging.enable();
+				this.executeInteractFunction();
+				this.dragged = false;
+			});
+		});
+	}
 
-  updateLinkPosition() {
-    this.connectedLinks.forEach((link) => {
-      if (link.firstVertex.id == this.vertex.id) {
-        link.updatePosition(this.getLatLng())
-      } else if (link.secondVertex.id == this.vertex.id) {
-        link.updatePosition(undefined, this.getLatLng())
-      }
-    })
+	executeInteractFunction() {
+		if (!this.dragged) {
+			console.log('Clicked');
+			if (this.clickedFunction) {
+				this.clickedFunction(this);
+			}
+		} else {
+			console.log('Dragged');
+			if (this.draggedFunction) {
+				this.draggedFunction(this);
+			}
+		}
+		this.setClickDragBehaviour(this.clickedFunction, this.draggedFunction);
+	}
 
-  }
+	setClickDragBehaviourTouch() {
+		alert('Touch interface not implemented');
+	}
 
-  getDragged() {
-    return this.dragged
-  }
-  setDragged(dragged: boolean) {
-    this.dragged = dragged
-  }
+	updateLinkPosition() {
+		this.connectedLinks.forEach((link) => {
+			if (link.firstVertex.id == this.vertexId) {
+				link.updatePosition(this.getLatLng());
+			} else if (link.secondVertex.id == this.vertexId) {
+				link.updatePosition(undefined, this.getLatLng());
+			}
+		});
+	}
 
-  renderTo(map: L.Map) {
-    this.assignedMap = map
-    map.addLayer(this)
-  }
-  clear() {
-    if (this.assignedMap) {
-      this.assignedMap!.removeLayer(this)
-    }
-  }
+	getDragged() {
+		return this.dragged;
+	}
+	setDragged(dragged: boolean) {
+		this.dragged = dragged;
+	}
 
+	renderTo(map: L.Map) {
+		this.assignedMap = map;
+		map.addLayer(this);
+	}
 
+	clear() {
+		if (this.assignedMap) {
+			this.assignedMap!.removeLayer(this);
+		}
+	}
 }
 
-export { VertexMarker }
+export { VertexMarker };
