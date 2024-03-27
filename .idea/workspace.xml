@@ -5,22 +5,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e70b4d72-178b-45b9-ab91-1763e6c1fa9a" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/web/src/lib/api/AdminInterface.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/web/src/lib/api/AdminInterface.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/web/src/lib/api/UserLocationInterface.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/web/src/lib/api/UserLocationInterface.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/web/src/lib/components/AdminControls.svelte" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/web/src/lib/components/ConfirmInput.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/src/web/src/lib/components/ConfirmInput.svelte" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/web/src/lib/components/EditContextMenu.svelte" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/web/src/lib/components/admin/AdminControls.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/src/web/src/lib/components/admin/AdminControls.svelte" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/ProjectGeo/[DEBUG]/Admin/DeleteGraph.bru" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/ProjectGeo/[DEBUG]/Graph/Create: Resource graph.bru" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/ProjectGeo/[DEBUG]/Graph/Delete: Resource graph.bru" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/ProjectGeo/[DEBUG]/Graph/Get: Resource graph.bru" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/ProjectGeo/[DEBUG]/Resource area/Create: Resource area.bru" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/ProjectGeo/[DEBUG]/Resource area/Delete: Resource area.bru" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/ProjectGeo/[DEBUG]/Resource area/Read: All.bru" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/ProjectGeo/[DEBUG]/Resource area/Read: id.bru" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/ProjectGeo/[DEBUG]/User/User.bru" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/ProjectGeo/[DEBUG]/vertex/Create: Vertex.bru" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/web/.yarn/install-state.gz" beforeDir="false" afterPath="$PROJECT_DIR$/src/web/.yarn/install-state.gz" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/web/src/lib/components/admin/CreateControl.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/src/web/src/lib/components/admin/CreateControl.svelte" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/web/src/lib/components/admin/EditControl.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/src/web/src/lib/components/admin/EditControl.svelte" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/web/src/lib/game/ResourceArea.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/web/src/lib/game/ResourceGraph.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/web/src/lib/components/buttons/Confirmation.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/src/web/src/lib/components/buttons/Confirmation.svelte" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/web/src/lib/game/CreateArea.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/web/src/lib/game/CreateArea.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/web/src/lib/game/MapArea.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/web/src/lib/game/MapArea.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/web/src/lib/json/Parser.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/web/src/lib/json/Parser.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/web/src/lib/mapping/Graphs.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/web/src/lib/mapping/Graphs.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/web/src/lib/mapping/Link.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/web/src/lib/mapping/Link.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/web/src/lib/mapping/VertexMarker.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/web/src/lib/mapping/VertexMarker.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/web/src/routes/admin/+page.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/src/web/src/routes/admin/+page.svelte" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,7 +43,12 @@
         </task>
         <projects_view>
           <tree_state>
-            <expand />
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="ProjectGeo" type="f1a62948:ProjectNode" />
+              </path>
+            </expand>
             <select />
           </tree_state>
         </projects_view>
@@ -71,24 +79,24 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Gradle.Build ProjectGeo.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.ProjectGeo [bootBuildImage].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.ProjectGeo [bootJar].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.ProjectGeo [bootRun].executor&quot;: &quot;Debug&quot;,
-    &quot;Gradle.ProjectGeo [bootTestRun].executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/gabrielmb/Documents/Projects/ProjectGeo/src/main/kotlin/se/gabnet/projectgeo/api/v1&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Gradle.Build ProjectGeo.executor": "Run",
+    "Gradle.ProjectGeo [bootBuildImage].executor": "Run",
+    "Gradle.ProjectGeo [bootJar].executor": "Run",
+    "Gradle.ProjectGeo [bootRun].executor": "Debug",
+    "Gradle.ProjectGeo [bootTestRun].executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "AdministratorEditorRefactoring",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/home/gabrielmb/Documents/Projects/ProjectGeo/src/main/kotlin/se/gabnet/projectgeo/api/v1",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "preferences.lookFeel"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1" />
