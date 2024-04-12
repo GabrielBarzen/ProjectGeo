@@ -1,0 +1,63 @@
+meta {
+  name: Create Area
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}api/v1/game/admin/area
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "id": "0",
+    "name": "afwe",
+    "graphs": [
+      {
+        "id": "0",
+        "centerLat": 0,
+        "centerLng": 0,
+        "vertices": [
+          {
+            "id": "0",
+            "lat": 56.03263628045466,
+            "lng": 12.706890106201174,
+            "connections": [
+              "3",
+              "1"
+            ]
+          },
+          {
+            "id": "1",
+            "lat": 56.03556144732525,
+            "lng": 12.69247055053711,
+            "connections": [
+              "0",
+              "2"
+            ]
+          },
+          {
+            "id": "2",
+            "lat": 56.038486392508986,
+            "lng": 12.703456878662111,
+            "connections": [
+              "1",
+              "3"
+            ]
+          },
+          {
+            "id": "3",
+            "lat": 56.03628071669471,
+            "lng": 12.719335556030275,
+            "connections": [
+              "2",
+              "0"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

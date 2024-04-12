@@ -1,4 +1,9 @@
 export type Area = {
+  graphs: Graph[];
+  id: string;
+  name: string;
+}
+export type Graph = {
   id: string;
   vertices: Vertex[];
   centerLat: number;

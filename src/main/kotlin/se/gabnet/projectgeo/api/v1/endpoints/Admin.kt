@@ -10,8 +10,8 @@ sealed class AdminEndpoint {
         const val ENDPOINT = "/graph"
     }
 
-    data object RESOURCE_AREA : AdminEndpoint() {
-        const val ENDPOINT = "/resource-area"
+    data object AREA : AdminEndpoint() {
+        const val ENDPOINT = "/area"
     }
 
     data object VERTEX : AdminEndpoint() {

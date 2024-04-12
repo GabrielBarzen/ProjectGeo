@@ -6,6 +6,11 @@ import type { Link } from './Link';
 class VertexMarker extends L.CircleMarker implements Vertex {
   connectLink(link: Link) {
     this.connectedLinks.push(link)
+    if (this.id == link.firstVertex.id) {
+      this.connections.push(link.secondVertex.id)
+    } else {
+      this.connections.push(link.firstVertex.id)
+    }
   }
   dragged = false;
 
@@ -42,6 +47,14 @@ class VertexMarker extends L.CircleMarker implements Vertex {
     this.lng = vertex.lng
     this.connections = vertex.connections
     this.id = vertex.id
+  }
+  toVertex(): Vertex {
+    return <Vertex>({
+      id: this.id,
+      lat: this.lat,
+      lng: this.lng,
+      connections: this.connections
+    })
   }
 
   lat: number;

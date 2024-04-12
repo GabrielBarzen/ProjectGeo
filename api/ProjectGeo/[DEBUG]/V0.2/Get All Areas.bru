@@ -1,0 +1,58 @@
+meta {
+  name: Get All Areas
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}api/v1/game/admin/area
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+    "id": "0",
+    "vertices": [
+      {
+        "id": "0",
+        "lat": 56.03997275510721,
+        "lng": 12.709894180297853,
+        "connections": [
+          "3",
+          "1"
+        ]
+      },
+      {
+        "id": "1",
+        "lat": 56.04687639850499,
+        "lng": 12.702598571777346,
+        "connections": [
+          "0",
+          "2"
+        ]
+      },
+      {
+        "id": "2",
+        "lat": 56.05066328927058,
+        "lng": 12.711267471313477,
+        "connections": [
+          "1",
+          "3"
+        ]
+      },
+      {
+        "id": "3",
+        "lat": 56.04884179327896,
+        "lng": 12.722339630126955,
+        "connections": [
+          "2",
+          "0"
+        ]
+      }
+    ],
+    "centerLat": 0,
+    "centerLng": 0,
+    "name": "abcd"
+  }
+}

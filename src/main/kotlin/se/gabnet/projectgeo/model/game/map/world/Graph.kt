@@ -4,50 +4,60 @@ package se.gabnet.projectgeo.model.game.map.world
 import com.google.gson.annotations.Expose
 import jakarta.persistence.*
 import org.hibernate.annotations.ColumnDefault
-import se.gabnet.projectgeo.index.inputvalidation.AdminInputValidationHandling.AdminInputValidationException
-import se.gabnet.projectgeo.index.inputvalidation.VertexInputHandler
+import org.hibernate.annotations.Type
+
 import se.gabnet.projectgeo.model.game.map.util.GeographyUtil
 import java.util.*
 
 
 @Entity
-class Graph() {
+
+class Graph(
+    @ManyToOne
+    @JoinColumn
+    var area: Area,
+
     @Expose
     @Id
-    val id: UUID = UUID.randomUUID()
+    @Column
+    val id: UUID = UUID.randomUUID(),
 
     @OneToMany(orphanRemoval = true, mappedBy = "graph", cascade = [CascadeType.ALL])
     @MapKey(name = "id")
     @Expose
-    var vertices: MutableMap<UUID, Vertex> = mutableMapOf()
+    var vertices: MutableMap<UUID, Vertex> = mutableMapOf(),
+
 
     @Expose
+    @Column
     @ColumnDefault(value = "0.0")
-    var centerY: Double = 0.0
-
+    var centerY: Double = 0.0,
     @Expose
+    @Column
     @ColumnDefault(value = "0.0")
-    var centerX: Double = 0.0
-
+    var centerX: Double = 0.0,
     @ColumnDefault(value = "0.0")
-    var maxY: Double = 0.0
-
+    @Column
+    var maxY: Double = 0.0,
     @ColumnDefault(value = "0.0")
-    var maxX: Double = 0.0
-
+    @Column
+    var maxX: Double = 0.0,
     @ColumnDefault(value = "0.0")
-    var minY: Double = 0.0
-
+    @Column
+    var minY: Double = 0.0,
     @ColumnDefault(value = "0.0")
-    var minX: Double = 0.0
-
+    @Column
+    var minX: Double = 0.0,
     @ColumnDefault(value = Double.MIN_VALUE.toString())
-    var maxDistance: Double = Double.MIN_VALUE
+    @Column
+    var maxDistance: Double = Double.MIN_VALUE,
+
+) {
 
 
 
     fun addVertex(y: Double, x: Double): Vertex {
-        val vertex = Vertex(y, x, mutableSetOf(), this)
+        val vertex = Vertex(y, x, this)
 
         if (vertices.isEmpty()) {
             vertices[vertex.id] = vertex
@@ -68,7 +78,7 @@ class Graph() {
 
     fun removeVertex(vertexToRemove: Vertex): Vertex? {
         if (this.vertices.size <= 3) {
-            throw AdminInputValidationException(VertexInputHandler.TooFewVertices())
+            //TODO: Throw error here
         }
         val neighbours: MutableSet<UUID> = mutableSetOf()
         for (connection in vertexToRemove.connections) {
@@ -113,9 +123,9 @@ class Graph() {
     }
 
     fun addVertexConnection(
-            sourceVertexUUID: UUID,
-            destinationVertexUUID: UUID,
-            directional: Boolean
+        sourceVertexUUID: UUID,
+        destinationVertexUUID: UUID,
+        directional: Boolean
     ): Vertex? {
         val fetchedSourceVertex: Vertex? = vertices[sourceVertexUUID]
         val fetchedDestinationVertex: Vertex? = vertices[destinationVertexUUID]
@@ -156,9 +166,9 @@ class Graph() {
     }
 
     fun removeVertexConnection(
-            sourceVertexUUID: UUID,
-            destinationVertexUUID: UUID,
-            directionalDelete: Boolean
+        sourceVertexUUID: UUID,
+        destinationVertexUUID: UUID,
+        directionalDelete: Boolean
     ): Vertex? {
         val fetchedSourceVertex: Vertex? = vertices[sourceVertexUUID]
         val fetchedDestinationVertex: Vertex? = vertices[destinationVertexUUID]

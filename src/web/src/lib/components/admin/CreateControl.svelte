@@ -14,19 +14,23 @@
 			map.off('click');
 			createArea = new CreateArea();
 			initialVertices.forEach((latlng) => {
-				createArea?.addVertex(latlng.lat, latlng.lng);
+				createArea?.createGraph.addVertex(latlng.lat, latlng.lng);
 			});
 		}
-		createArea.clear();
-		createArea.renderTo(map);
+		createArea.createGraph.clear();
+		createArea.createGraph.renderTo(map);
 
 		valid = false;
 		confirmedVertices = true;
-		message = 'Please fill area data';
+		message = 'Please fill name';
 	}
 	function confirm() {
-		AdminAreaInterface.post(createArea);
-		AdminAreaInterface.update(createArea);
+		createArea!.name = name;
+		if (createArea) {
+			console.log(JSON.stringify(createArea.toArea()));
+			AdminAreaInterface.CREATE(createArea.toArea());
+		}
+
 		clear();
 		eventDispatcher('confirm');
 	}
@@ -84,7 +88,7 @@
 
 		initialVertices = [];
 		initialVerticesLayers = [];
-		createArea?.clear();
+		createArea?.createGraph.clear();
 
 		name = '';
 
@@ -101,9 +105,11 @@
 	{#if validNumberOfInitialVertices && confirmedVertices}
 		<div class="w-72">
 			<div class="relative w-full min-w-[200px] h-10">
-				<input
-					on:input={validateName}
+				<textarea
 					bind:value={name}
+					on:input={() => {
+						validateName();
+					}}
 					class="peer w-full pointer-events-auto h-full bg-transparent text-blue-gray-700 font-sans font-normal outline outline-0 focus:outline-0 disabled:bg-blue-gray-50 disabled:border-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 border focus:border-2 border-t-transparent focus:border-t-transparent text-sm px-3 py-2.5 rounded-[7px] border-blue-gray-200 focus:border-gray-900"
 					placeholder=" "
 					id="name-input"

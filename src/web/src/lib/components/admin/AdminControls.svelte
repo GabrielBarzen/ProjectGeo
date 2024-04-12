@@ -1,9 +1,14 @@
 <script lang="ts">
 	import L from 'leaflet';
 	import ControlSelector from './ControlSelector.svelte';
+	import * as AdminAreaInterface from '$lib/api/AdminAreaInterface';
 	import CreateControl from './CreateControl.svelte';
 	import EditControl from './EditControl.svelte';
 	import * as Types from './Types';
+	import { onMount } from 'svelte';
+	import * as Globals from './Globals';
+	import type { Area } from '$lib/mapping/Graphs';
+	import { MapArea } from '$lib/game/MapArea';
 
 	async function changeControl(event: CustomEvent<Types.Control>) {
 		console.log(event.detail);
@@ -35,6 +40,27 @@
 		expanded = false;
 		currentControl = Types.Control.None;
 	}
+
+	onMount(() => {
+		console.log('ree');
+		renderAreas();
+	});
+	async function renderAreas() {
+		var areas: Area[];
+		if (Globals.localhost) {
+			//Get from stubs
+		} else {
+			areas = await AdminAreaInterface.READ();
+			console.log(areas);
+			areas.forEach((area) => {
+				var renderArea = new MapArea(area);
+				renderArea.renderTo(map);
+			});
+		}
+		map.on('click', (e) => {
+			console.log(e);
+		});
+	}
 </script>
 
 <div class="absolute top-0 lef-0 size-full z-10 pointer-events-none">
@@ -51,7 +77,8 @@
 				{#if currentControl == Types.Control.Edit}
 					<EditControl></EditControl>
 				{:else if currentControl == Types.Control.Create}
-					<CreateControl bind:map on:abort={() => clear()}></CreateControl>
+					<CreateControl bind:map on:abort={() => clear()} on:confirm={() => clear()}
+					></CreateControl>
 				{:else}
 					<ControlSelector on:control={(e) => changeControl(e)}></ControlSelector>
 				{/if}

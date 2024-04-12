@@ -41,9 +41,11 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+    implementation("org.springframework.boot:spring-boot-starter-actuator:3.2.4")
 
 
 }
+
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
