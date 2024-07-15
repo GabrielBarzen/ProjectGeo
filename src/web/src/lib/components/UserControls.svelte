@@ -2,25 +2,33 @@
 	import L from 'leaflet';
 	import 'leaflet/dist/leaflet.css';
 	import { onMount } from 'svelte';
-	// import Map from './Map.svelte';
-	export var map: L.Map | undefined;
+	export var map: L.Map;
 
 	onMount(() => {
-		console.log('starting map onclick events for:');
-		console.log(map);
+		map.on('click', (e) => {
+			console.log(e);
+		});
 	});
+
+	var expanded = false;
+	function toggleExpand() {
+		expanded = !expanded;
+	}
 </script>
 
-<div id="controls" class="controlsDiv">
-	<div class="w-4/12">
-		<div class="w-full">
-			<button class="btn-primary"> This be button </button>
+<div class="controlsDiv">
+	<div class="flex size-full justify-center">
+		<div class="w-4/12 flex flex-col-reverse">
+			<button class="w-full btn-primary mb-2" on:click={toggleExpand}> Return </button>
+			{#if expanded}
+				<button class="w-full btn-primary mb-2" on:click={toggleExpand}> lamao </button>
+			{/if}
 		</div>
 	</div>
 </div>
 
 <style lang="postcss">
 	.controlsDiv {
-		@apply absolute size-full top-0 left-0 z-10 flex justify-center flex-row items-end pointer-events-none;
+		@apply absolute top-0 left-0 size-full z-10 pointer-events-none;
 	}
 </style>

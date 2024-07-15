@@ -5,12 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e70b4d72-178b-45b9-ab91-1763e6c1fa9a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/admin/area/AreaController.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/admin/area/AreaManipulator.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/admin/area/AreaRequest.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.5/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.5/checksums/checksums.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.5/checksums/md5-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.5/checksums/md5-checksums.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.5/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.5/checksums/sha1-checksums.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.5/dependencies-accessors/dependencies-accessors.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.5/dependencies-accessors/dependencies-accessors.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.5/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.5/executionHistory/executionHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.5/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.5/executionHistory/executionHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.5/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.5/fileHashes/fileHashes.bin" afterDir="false" />
@@ -21,37 +19,19 @@
       <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/ProjectGeo/environments/ProjectGeoDev.bru" beforeDir="false" afterPath="$PROJECT_DIR$/api/ProjectGeo/environments/ProjectGeoDev.bru" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/ProjectGeoApplication.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/ProjectGeoApplication.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v0/game/player/LocationController.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/admin/AreaController.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/admin/AreaDefinitionController.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/admin/GraphController.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/admin/VertexController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/datahandler/GraphInputHandler.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/datahandler/VertexInputHandler.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/endpoints/Admin.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/endpoints/Admin.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/index/inputvalidation/AdminInputValidationHandling.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/index/inputvalidation/GraphInputHandler.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/index/inputvalidation/ResourceAreaInputHandler.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/index/inputvalidation/VertexInputHandler.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/map/placeable/persistence/AreaDefinitionRepository.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/map/world/Area.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/map/world/Area.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/map/world/AreaDefinition.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/map/world/Graph.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/map/world/Graph.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/map/world/Vertex.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/model/game/map/world/Vertex.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kls_database.db" beforeDir="false" afterPath="$PROJECT_DIR$/kls_database.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/admin/area/AreaController.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1/admin/area/AreaController.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/web/src/lib/api/AdminAreaInterface.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/web/src/lib/api/AdminAreaInterface.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/web/src/lib/api/AdminInterface.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/web/src/lib/api/AdminInterface.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/web/src/lib/components/Map/BaseMap.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/web/src/lib/components/Map/BaseMap.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/web/src/lib/components/UserControls.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/src/web/src/lib/components/UserControls.svelte" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/web/src/lib/components/UserMap.svelte" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/web/src/lib/components/admin/AdminControls.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/src/web/src/lib/components/admin/AdminControls.svelte" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/web/src/lib/components/admin/CreateControl.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/src/web/src/lib/components/admin/CreateControl.svelte" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/web/src/lib/game/AreaRenderer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/web/src/lib/game/AreaRenderer.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/web/src/lib/game/CreateArea.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/web/src/lib/game/CreateArea.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/web/src/lib/components/admin/EditControl.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/src/web/src/lib/components/admin/EditControl.svelte" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/web/src/lib/game/CreateGraph.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/web/src/lib/game/CreateGraph.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/web/src/lib/game/MapArea.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/web/src/lib/game/MapArea.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/web/src/lib/mapping/Graphs.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/web/src/lib/mapping/Graphs.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/web/src/lib/mapping/VertexMarker.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/web/src/lib/mapping/VertexMarker.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/web/src/lib/game/MapGraph.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/web/src/lib/game/MapGraph.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/web/src/routes/admin/+page.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/src/web/src/routes/admin/+page.svelte" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/web/src/routes/user/+page.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/src/web/src/routes/user/+page.svelte" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -118,24 +98,29 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Gradle.Build ProjectGeo.executor": "Run",
-    "Gradle.ProjectGeo [bootBuildImage].executor": "Run",
-    "Gradle.ProjectGeo [bootJar].executor": "Run",
-    "Gradle.ProjectGeo [bootRun].executor": "Debug",
-    "Gradle.ProjectGeo [bootTestRun].executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "AdministratorEditorRefactoring",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/home/gabrielmb/Documents/Projects/ProjectGeo/src/main/kotlin/se/gabnet/projectgeo/api/v1",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "preferences.intentionPowerPack"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Gradle.Build ProjectGeo.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.ProjectGeo [bootBuildImage].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.ProjectGeo [bootJar].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.ProjectGeo [bootRun].executor&quot;: &quot;Debug&quot;,
+    &quot;Gradle.ProjectGeo [bootTestRun].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;AdministratorEditorRefactoring&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/gabrielmb/Documents/Projects/ProjectGeo/src/main/kotlin/se/gabnet/projectgeo/api/v1&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.project.gradle&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;kotlin-gradle-user-dirs&quot;: [
+      &quot;/home/gabrielmb/.gradle&quot;
+    ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/main/kotlin/se/gabnet/projectgeo/api/v1" />

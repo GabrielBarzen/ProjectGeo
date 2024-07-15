@@ -39,13 +39,18 @@
 	function clear(): void {
 		expanded = false;
 		currentControl = Types.Control.None;
+		renderAreas();
 	}
 
 	onMount(() => {
-		console.log('ree');
 		renderAreas();
 	});
+
+	var renderedAreas: MapArea[] = [];
 	async function renderAreas() {
+		renderedAreas.forEach((area) => {
+			area.clear();
+		});
 		var areas: Area[];
 		if (Globals.localhost) {
 			//Get from stubs
@@ -55,6 +60,7 @@
 			areas.forEach((area) => {
 				var renderArea = new MapArea(area);
 				renderArea.renderTo(map);
+				renderedAreas.push(renderArea);
 			});
 		}
 		map.on('click', (e) => {
@@ -63,7 +69,7 @@
 	}
 </script>
 
-<div class="absolute top-0 lef-0 size-full z-10 pointer-events-none">
+<div class="controlsDiv">
 	<div class="flex size-full justify-center">
 		<div class="w-4/12 flex flex-col-reverse">
 			{#if currentControl != Types.Control.Create}
@@ -75,7 +81,7 @@
 			{/if}
 			{#if expanded}
 				{#if currentControl == Types.Control.Edit}
-					<EditControl></EditControl>
+					<EditControl bind:areas={renderedAreas}></EditControl>
 				{:else if currentControl == Types.Control.Create}
 					<CreateControl bind:map on:abort={() => clear()} on:confirm={() => clear()}
 					></CreateControl>
@@ -86,3 +92,9 @@
 		</div>
 	</div>
 </div>
+
+<style lang="postcss">
+	.controlsDiv {
+		@apply absolute top-0 left-0 size-full z-10 pointer-events-none;
+	}
+</style>

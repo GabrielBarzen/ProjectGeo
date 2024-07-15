@@ -5,6 +5,16 @@ import { GraphRenderer } from "./AreaRenderer";
 import { Link } from "$lib/mapping/Link";
 
 class MapGraph extends GraphRenderer implements Graph {
+  setLineClickEvent(arg0: () => void): void {
+    this.links.forEach(links => {
+      links.forEach(link => {
+        link.clickLine.on("click", () => { arg0() })
+      })
+    })
+
+  }
+
+  renderMarkers: boolean = false;
   setTitle(name: string) {
     this.titleIcon = new L.DivIcon({ html: `<b>${name}</b>` })
     this.titleMarker = new L.Marker([this.centerLat, this.centerLng], { icon: this.titleIcon })
@@ -129,7 +139,9 @@ class MapGraph extends GraphRenderer implements Graph {
     this.createLinks()
     this.assignedMap = map
     this.vertexMarkers.forEach(vertex => {
-      vertex.renderTo(this.assignedMap!)
+      if (this.renderMarkers) {
+        vertex.renderTo(this.assignedMap!)
+      }
       this.links.get(vertex.id)?.forEach(link => { link.renderTo(this.assignedMap!) })
     })
     if (this.titleMarker) {

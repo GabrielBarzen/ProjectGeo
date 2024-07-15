@@ -30,8 +30,15 @@ export async function UPDATE(area: Area) {
   throw new Error("Function not implemented.");
 }
 export async function DELETE(area: Area) {
-
-  throw new Error("Function not implemented.");
+  const createUrl = `${URL}`
+  const headers = { 'Accept': 'application/json' }
+  const method = "DELETE"
+  const body = JSON.stringify(area)
+  const data = await fetch(createUrl, {
+    method: method,
+    headers: headers,
+    body: body
+  })
 }
 
 function parseArea(data: Area): Area {

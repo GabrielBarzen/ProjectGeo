@@ -1,9 +1,9 @@
 <script lang="ts">
-	import '../../app.css';
 	import * as BaseMap from '$lib/components/Map/BaseMap';
 	import AdminControls from '$lib/components/admin/AdminControls.svelte';
-	import { onMount } from 'svelte';
 	import L from 'leaflet';
+	import { onMount } from 'svelte';
+	import '../../app.css';
 
 	var mapElement: HTMLElement;
 	var map: L.Map;

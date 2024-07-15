@@ -3,6 +3,18 @@ import L from 'leaflet';
 import { MapGraph } from './MapGraph';
 
 class MapArea implements Area {
+  setLineClickEvent(lineClickFunction: (areaId: Area) => void) {
+    this.mapGraph.forEach(graph => graph.setLineClickEvent(() => lineClickFunction(this.toArea())))
+  }
+  toArea(): Area {
+    return <Area>{
+      id: this.id,
+      graphs: this.graphs,
+      name: this.name
+    }
+  }
+
+  renderMarkers: boolean = false;
 
   constructor(
     area: Area,
@@ -27,6 +39,7 @@ class MapArea implements Area {
 
   renderTo(map: L.Map) {
     this.mapGraph.forEach(mapGraph => {
+      mapGraph.renderMarkers = this.renderMarkers
       mapGraph.setTitle(this.name)
 
       mapGraph.renderTo(map)
